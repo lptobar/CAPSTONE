@@ -1,0 +1,187 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+
+{% block content %}
+{% if request.user.id_tipo_usuario.id_tipo_usuario == 5 %}
+    <div class="card card-mrg-matricula">
+        <div class="card-title">
+            <h1 class="text-center text-white">Ingreso de profesor</h1>
+        </div>
+        <div class="card card-matricula container">
+            <form action="" class="mt-3" id="form">
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="">RUN Profesor</label>
+                        <input type="text" class="form-control" name="rut" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Nombres</label>
+                        <input type="text" class="form-control" name="nombres" required>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Apellido Paterno</label>
+                        <input type="text" class="form-control" name="appaterno" required>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Apellido Materno</label>
+                        <input type="text" class="form-control" name="apmaterno" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="">Nacionalidad</label>
+                        <select class="form-select" name="nacionalidad">
+                            <option value="">Elija una opción</option>
+                            {% for n in Nacionalidad %}
+                                <option value="{{ n.id_nacionalidad }}">{{ n.nombre_nacionalidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" name="fecha_nacimiento" required>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label>Sexo</label>
+                        <select class="form-select" name="genero" required>
+                            <option selected>Elija una opción</option>
+                            {% for g in Genero %}
+                                <option value="{{ g.id_genero}}">{{ g.nombre_genero }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label for="">Dirección</label>
+                        <input type="text" class="form-control" name="nombre_calle" required>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <label for="">Numero</label>
+                        <input type="number" class="form-control" name="numero" required>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <label for="">Departamento</label>
+                        <input type="text" class="form-control" name="depto">
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <label for="">Block</label>
+                        <input type="text" class="form-control" name="block">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 mb-3">
+                        <label for="">Región</label>
+                        <select class="form-select" name="region" required>
+                            <option value="" selected>Elija una opción</option>
+                            <option value="Metropolitana de Santiago">Metropolitana de Santiago</option>
+                            <option value="Antofagasta">Antofagasta</option>
+                            <option value="Valparaíso">Valparaíso</option>
+                            <option value="Araucanía">Araucanía</option>
+                            <option value="Los Lagos">Los Lagos</option>
+                            <option value="O'Higgins">O'Higgins</option>
+                            <option value="Coquimbo">Coquimbo</option>
+                            <option value="Biobío">Biobío</option>
+                            <option value="Arica y Parinacota">Arica y Parinacota</option>
+                            <option value="Maule">Maule</option>
+                            <option value="Tarapacá">Tarapacá</option>
+                            <option value="Ñuble">Ñuble</option>
+                            <option value="Los Ríos">Los Ríos</option>
+                            <option value="Atacama">Atacama</option>
+                            <option value="Magallanes y de la Antártica Chilena">Magallanes y de la Antártica Chilena</option>
+                            <option value="Aysén del General Carlos Ibáñez del Campo">Aysén del General Carlos Ibáñez del Campo</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        <label for="">Comuna</label>
+                        <select class="form-select" name="comuna" required>
+                            <option selected>Elija una opción</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Teléfono Domicilio</label>
+                        <input type="text" class="form-control" name="telefono_fijo" required>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Celular</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="celular">+56</span>
+                            <input type="text" class="form-control" name="celular" aria-describedby="celular" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Correo electronico</label>
+                        <input type="text" class="form-control" name="email" required>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-5 mb-3">
+                        <label for="">Grado Académico</label>
+                        <select class="form-select" name="grado_academico" required>
+                            <option value="">Elija una opción</option>
+                            {% for ga in GradoAcademico %}
+                                <option value="{{ ga.id_grado_academico }}">{{ ga.nombre_grado_academico }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-7 mb-3">
+                        <label for="">Título</label>
+                        <select class="form-select" name="titulo">
+                            <option value="">Elija una opción</option>
+                            {% for t in Titulo %}
+                                <option value="{{ t.id_titulo}}">{{ t.nombre_titulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Mención</label>
+                        <select class="form-select" name="mencion" required>
+                            <option value="">Elija una opción</option>
+                            {% for m in Mencion %}
+                                <option value="{{ m.id_mencion}}">{{ m.nombre_mencion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Mágister</label>
+                        <input type="text" class="form-control" name="magister">
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label for="">Doctorado</label>
+                        <input type="text" class="form-control" name="doctorado">
+                    </div>
+                </div>
+                <hr>
+                <p class="text-center" style="color: aliceblue;">Al hacer clic en el botón "Enviar Información", el apoderado indica
+                    que toda la información declarada del estudiante es verídica. </p>
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button class="btn btn-primary mb-3" type="submit">Enviar información</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'scripts/usuarios/profesor/crear-profesor.js' %}"></script>
+{% endblock %}

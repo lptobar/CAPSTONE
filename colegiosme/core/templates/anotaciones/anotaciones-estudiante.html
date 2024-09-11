@@ -1,0 +1,102 @@
+{% extends 'base-colegio.html' %}
+{% block content %}
+{% if request.user.id_tipo_usuario.id_tipo_usuario <= 2 %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-header text-center text-white">
+                {% if request.user.id_tipo_usuario.id_tipo_usuario == 1 %}
+                <h1>Mis Anotaciones</h1>
+                {% else %}
+                <h1>{{ alumno|title }}</h1>
+                {% endif %}
+            </div>
+            <div class="card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre asignatura</th>
+                            <th>Anotaciones</th>
+                        </tr>
+                    </thead>
+                    {% for a in anotaciones %}
+                    <tbody>
+                        <td>{{ a.asignatura.id_lista_asignatura.nombre_lista_asignatura }}</td>
+                        <td>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal{{ a.asignatura.id_asignatura }}">
+                                <i class="bi bi-eye-fill"></i> Ver anotaciones
+                            </button>
+                        </td>
+                    </tbody>
+                    {% endfor %}
+                </table>
+                
+                <div class="row">
+                    <div class="d-flex justify-content-center my-1">
+                        {% if request.user.id_tipo_usuario.id_tipo_usuario == 2 %}
+                            <a href="{% url 'portalAnotaciones' %}"class="btn btn-secondary">Volver</a>
+                        {% endif %}   
+                    </div> 
+                </div>    
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% for a in anotaciones %}
+<div class="modal fade" id="myModal{{ a.asignatura.id_asignatura }}" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% for tipo_anotacion in tipo_anotaciones %}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-2">
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#col{{ tipo_anotacion.id_tipo_anotacion }}" aria-controls="col{{ tipo_anotacion.id_tipo_anotacion }}"><i class="bi bi-plus-lg"></i></button>
+                        </div>
+                        <div class="col-10">
+                            <h2>Anotacion {{ tipo_anotacion.nombre_tipo_anotacion }}</h2>
+                        </div>
+                    </div>
+                    <div class="col-12 container collapse" id="col{{ tipo_anotacion.id_tipo_anotacion }}">
+                        {% for anotacion in a.anotaciones %}
+                            {% if anotacion.id_tipo_anotacion.id_tipo_anotacion|safe == tipo_anotacion.id_tipo_anotacion|safe %}
+                            <div class="card container border-primary mb-3 col-12">
+                                <div class="row mt-2">
+                                    <div class="col-6">
+                                        <h6 class="start" style="color: darkgray;">{{ anotacion.id_asignatura.run_profesor }}</h6>
+                                        <h6 class="start" style="color: darkgray;">{{ anotacion.id_asignatura.id_lista_asignatura }}</h6>
+                                    </div>
+                                    <div class="col-6">
+                                        <h6 class="text-end" style="color: darkgray;">{{ anotacion.fecha_anotacion }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <h6>ANOTACION:</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>{{ anotacion.anotacion|upper }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,4 @@
+<form action="{{ url }}" method="POST" name="form">
+<input type="hidden" name="token_ws" value="{{ token }}">
+{% csrf_token %}
+</form>

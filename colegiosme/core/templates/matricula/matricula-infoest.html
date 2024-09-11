@@ -1,0 +1,151 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/toast-controller.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if request.user.id_tipo_usuario.id_tipo_usuario >= 4 %}
+	<div class="container d-flex align-items-center justify-content-center">
+		<div class="card card-mrg-matricula">
+			<h1 class="text-center text-white">Formulario de Matriculas</h1>
+			<div class="card card-matricula my-3">
+				<div class="container">
+					<div class="card-title">
+						<h1>Informacion adicional del estudiante</h1>
+					</div>
+					<form action="" class="mt-3" id="matricula">
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">Curso repetido</label>
+							<div class="col-sm-3 align-self-center">
+								<a href="{% url 'listarCursosReprobados' id_matricula %}" class="btn btn-primary w-100">Agregar cursos repetidos</a>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">Grupo Familiar:</label>
+							<div class="col-sm-3 align-self-center">
+								<a href="{% url 'listarGrupoFamiliar' id_matricula %}" class="btn btn-primary w-100">Agregar grupo familiar</a>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">Colegio de procendencia</label>
+							<div class="col-sm-9 align-self-center">
+								<input type="text" class="form-control" name="colegio_procedencia">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">Razones del cambio</label>
+							<div class="col-sm-9 align-self-center">
+								<input type="text" class="form-control" name="razon_cambio_colegio">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">¿A través de que medio obtuvo información del colegio?</label>
+							<div class="col-sm-9 align-self-center">
+								<input type="text" class="form-control" name="medio">
+							</div>
+						</div>
+						<hr>
+						<div class="row mb-3">
+							<div class="col-sm-3 align-self-center">
+								<label for="" class="col-form-label">¿Pertenece a una etnia?</label>
+							</div>
+							<div class="col-sm-3 align-self-center">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="pertenece_etnia" value="true" onclick="alternarEtnia(true)" required>
+									<label class="form-check-label" for="">Si</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="pertenece_etnia" value="false" onclick="alternarEtnia(false)">
+									<label class="form-check-label" for="">No</label>
+								</div>
+							</div>
+							<div class="col-sm-6 align-self-center" id="indiqueEtnia" style="display: none;">
+								<select class="form-select" name="etnia">
+									<option value="Mapuche">Pueblo Mapuche</option>
+									<option value="Aimara">Pueblo Aimara</option>
+									<option value="Rapa-nui">Pueblo Rapa Nui</option>
+									<option value="Selknam">Pueblo Selk'nam</option>
+									<option value="Kawésqar">Pueblo Kawésqar</option>
+									<option value="Yagán">Pueblo Yagán</option>
+									<option value="Europeo">Origen Europeo</option>
+									<option value="Afrodescendiente">Afrodescendiente</option>
+									<option value="Peruano">Peruano</option>
+									<option value="Boliviano">Boliviano</option>
+									<option value="Colombiano">Colombiano</option>
+									<option value="Otros latinos">Otros países latinoamericanos</option>
+									<option value="Otro">Otro</option>
+								</select>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">Estudiante Prioritario</label>
+							<div class="col-sm-4 align-self-center">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="estudiante_prioritario" value="true" required>
+									<label class="form-check-label" for="estudiantePrioritarioSi">Si</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="estudiante_prioritario" value="false">
+									<label class="form-check-label" for="estudiantePrioritarioNo">No</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-3 col-form-label align-self-center">Postulante al Proyecto de Integracion (PIE)</label>
+							<div class="col-sm-3 align-self-center">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="pie" value="true" onclick="alternarAutorizaEvaluacion(false)" required>
+									<label class="form-check-label" for="">Si</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="pie" value="false" onclick="alternarAutorizaEvaluacion(true)">
+									<label class="form-check-label" for="">No</label>
+								</div>
+							</div>
+						</div>
+						<div id="autorizaEvaluacion" class="row mb-3" style="display: none;">
+							<label for="" class="col-sm-10 col-form-label align-self-center">En el caso de no ser postulante al PIE ¿Autoriza a una evaluación de un profesional idóneo (Psicologo, educadro diferencial, entre otros profesionales)?</label>
+							<div class="col-sm-2 align-self-center">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="evaluacion_profesional" value="true">
+									<label class="form-check-label" for="">Si</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="evaluacion_profesional" value="false">
+									<label class="form-check-label" for="">No</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label for="" class="col-sm-12 col-form-label align-self-center">Señalar si el estudiante padece alguna enfermedad o condición (Alergias, asma, cardiopatías, entre otras) con la cual en colegio deba tener un cuidado especial.</label>
+							<div class="col-sm-12 align-self-center">
+								<input type="text" class="form-control" name="enfermedad_cronica">
+							</div>
+						</div>
+						<hr>
+						<p class="text-center">Al hacer clic en el botón "Enviar Información", el apoderado indica que toda la información declarada del estudiante es verídica. </p>
+						<div class="d-grid gap-2 col-6 mx-auto">
+							<button class="btn btn-primary mb-3" type="submit">Enviar información</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+<div class="toast-message" style="display: none;"></div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'scripts/matricula-infoest.js' %}" defer data-id="{{ id_matricula }}"></script>
+{% endblock %}

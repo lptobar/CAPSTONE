@@ -1,0 +1,70 @@
+{% extends 'base-colegio.html' %}
+{% load grade_calculator %}
+{% load static %}
+
+{% block styles %}
+<!-- <link rel="stylesheet" href="{% static '/css/index.css' %}"> -->
+{% endblock %}
+
+{% block content %}
+{% if request.user.id_tipo_usuario.id_tipo_usuario == 5 %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white">Notas por curso</h1>
+                <div class="row justify-content-center mb-3">
+                    <div class="col-sm-6">
+                        <select class="form-select" id="filter">
+                            <option value="" selected>Elija un curso</option>
+                            {% for curso in cursos %}
+                            <option value="{{ curso.id_curso }}">{{ curso }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="container row d-flex justify-content-between my-3">
+                    {% for d in asignaturas %}
+                        <div class="col-md-6 my-1">
+                            <div class="card d-flex  h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">{{ d.asignatura.id_lista_asignatura }}</h5>
+                                    <h6 class="card-title text-center">{{ d.asignatura.id_curso }}</h6>
+                                    <hr>
+                                    <p class="card-text">Promedio curso:</p>
+                                    <div class="alert alert-info text-center" role="alert">
+                                        <h4>{{ d.promedio }}</h4>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'notasAsignatura' d.asignatura.id_asignatura %}" class="btn btn-primary">Ver notas</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script>
+    document.querySelector('#filter').addEventListener('change', (ev) => {
+        if (ev.target.value === '') return;
+
+        location.href = '/notas-curso/' + ev.target.value;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+{% block content %}
+    <div class="card text-center">
+        <div class="card-header">
+            <h5 class="card-title"> Resultado del Pago</h5>
+
+        </div>
+        <div class="card-body">
+            <div class="row col-12">
+                <div class="row">
+                {% if response.response_code == 0 %}
+                    <h6 class="card-subtitle">¡El pago se realizó exitosamente!</h6>
+                {% else %}
+                    <h6 class="card-subtitle">El pago ha fallado. Por favor, inténtalo nuevamente.</h6>
+                {% endif %}
+                </div>
+                <div class="row col-12">
+                <p class="card-text">Código de respuesta: {{ response.response_code }}</p>
+                </div>
+                <div class="row col-12">
+                    <p class="card-text">Mensaje de respuesta: {{ response.response_message }}</p>
+                </div>
+                <div class="row col-12">
+                    <p class="card-text">Token de la transacción: {{ token }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+           <a href="{% url 'inicio' %}" class="btn btn-primary">ir al home</a>
+           <a href="{% url 'listarMensualidad' %}" class="btn btn-success">volver a mensualidad</a>
+        </div>
+    </div>
+
+
+{% endblock %}

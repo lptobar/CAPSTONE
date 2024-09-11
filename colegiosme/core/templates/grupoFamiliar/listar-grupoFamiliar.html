@@ -1,0 +1,71 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+{% block styles %}
+    <!-- <link rel="stylesheet" href="{% static '/css/index.css' %}"> -->
+{% endblock %}
+{% block content %}
+
+
+<div class="row mt-3">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+        <h1 >Administración Grupo Familiar</h1>
+    </div>
+    
+</div>
+<div class="row mt-3">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+        <a href="{%url 'crearGrupoFamiliar' id_matricula %}"class="btn btn-primary">Crear Grupo Familiar</a>
+
+        <a href="{%url 'matriculasInfoest' id_matricula%}"class="btn btn-secondary">Volver al formulario</a>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+        
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="table table-striped table-hover table-resposive-sm">
+            <table class="table table-dark table-sm table-striped ">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                       
+                        <th>edad</th>
+                        <th>Parentesco</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for gf in grupoFamiliar%}
+                    <tr>
+                        <td>
+                            {{gf.id_gr_fam}}
+                        </td>
+                        <td>
+                            {{gf.nombre}}
+                        </td>
+                        
+                        <td>
+                            {{gf.edad}}
+                        </td>
+                        <td>
+                            {{gf.parentesco}}
+                        </td>
+                        <td>
+                            <a href="{% url 'editarGrupoFamiliar' gf.id_gr_fam%}"class="btn btn-warning">Editar Grupo Familiar</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'eliminarGrupoFamiliar' gf.id_gr_fam %}" class="btn btn-danger">Eliminar Grupo Familiar</a>
+                        </td>
+                    </tr>
+            
+                    {%endfor%}  
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{%endblock%}

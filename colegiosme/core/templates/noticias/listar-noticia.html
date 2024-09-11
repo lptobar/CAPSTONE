@@ -1,0 +1,48 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+{% if request.user.id_tipo_usuario.id_tipo_usuario >= 4 %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white">Listar noticias</h1>
+            </div>
+            <div class="card">
+                <div class="text-center my-1">
+                    <a href="{% url 'crearNoticia' %}" class="btn btn-primary">Crear noticia</a>
+                </div>
+                <div class="container row d-flex justify-content-between my-3">
+                    {% for n in Noticias %}
+                        <div class="col-md-6 my-1">
+                            <div class="card h-100 w-100">
+                                <img src="{{ n.imagen.url }}" class="card-img-top img-noticia">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ n.titulo|upper }}</h5>
+                                    <p class="card-text">{{ n.subtitulo }}</p>
+                                    <div class="d-flex justify-content-between my-1">
+                                        <a href="{% url 'noticia' n.id_noticia %}" class="btn btn-primary">Ir a la noticia</a>
+                                        <a href="{% url 'editarNoticia' n.id_noticia %}" class="btn btn-secondary">Editar noticia</a>
+                                        <a href="{% url 'eliminarNoticia' n.id_noticia %}" class="btn btn-danger">Eliminar noticia</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

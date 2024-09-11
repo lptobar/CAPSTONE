@@ -1,0 +1,56 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+
+{% block styles %}
+<!-- <link rel="stylesheet" href="{% static '/css/index.css' %}"> -->
+{% endblock %}
+
+{% block content %}
+{% if request.user.id_tipo_usuario.id_tipo_usuario == 3 or request.user.id_tipo_usuario.id_tipo_usuario == 5 %}
+
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white">Asistencia</h1>
+            </div>
+            <div class="card">
+                <div class="container row d-flex justify-content-between my-3">
+                    {% for c in Cursos %}
+                    <div class="col-12 col-md-6 my-1">
+                        <div class="card h-100 w-100">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h5 class="card-title">{{ c.id_lista_curso.nombre_curso }} {{ c.id_tipo_curso.nombre_tipo_curso }} - {{ c.anio_curso }}</h5>
+                                    </div>
+                                    <div class="col-4" style="text-align: right; color: darkgray">
+                                        <p>{{ c.id_jornada.nombre_jornada }}</p>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <div class="text-center mb-3">
+                                    <a href="{% url 'asistenciaEstudiantes' id=c.id_curso %}" class="btn btn-primary btn-block">Registrar asistencia {{ Fecha }}</a>
+                                </div>
+                                <div class="text-center mb-3">
+                                    <a href="{% url 'verAsistencia' c.id_curso %}"  class="btn btn-primary btn-block">Ver asistencia</a>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

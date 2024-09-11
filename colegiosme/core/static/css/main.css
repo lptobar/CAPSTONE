@@ -1,0 +1,21 @@
+html,
+body {
+    background-color: #87b7f5;
+}
+
+.my-swal-container {
+    max-width: 100%;
+    width: 100%;
+}
+
+.my-swal-popup {
+    width: 100%;
+}
+
+#toggle-content {
+    transition: transform 0.3s ease-in-out;
+}
+
+#menu.hidden {
+    transform: translateX(-100%);
+}

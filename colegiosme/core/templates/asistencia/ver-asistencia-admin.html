@@ -1,0 +1,109 @@
+{% extends 'base-colegio.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static '/css/asistencia.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if request.user.id_tipo_usuario.id_tipo_usuario == 3 or request.user.id_tipo_usuario.id_tipo_usuario == 5 %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white">Información Total del Curso</h1>
+            </div>
+            <div class="card">
+                <div class="container row d-flex justify-content-between my-3">
+                    <div id="chart2" class="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white">Información por Alumnos</h1>
+            </div>
+            <div class="card">
+                <div class="container row d-flex justify-content-between my-3">
+                    <div id="chart1" class="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+    var datos=JSON.parse('{{datos_json|safe}}');
+    var myChart=echarts.init(document.getElementById('chart2'));
+    var option = {
+        'title': {
+            'text': datos.text,
+            'subtext': datos.subtext,
+            'left': 'center'
+            },
+        'tooltip': {
+            'trigger': 'item'
+            },
+        'legend': {
+            'orient': 'vertical',
+            'left': 'left'
+            },
+        'series': [
+            {
+                'name': 'Estado Asistencia',
+                'type': 'pie',
+                'radius': '50%',
+                'data': datos.data,
+                'emphasis': {
+                    'itemStyle': {
+                        'shadowBlur': 10,
+                        'shadowOffsetX': 0,
+                        'shadowColor': 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+            }
+            ]
+        };
+
+    myChart.setOption(option);
+    var datos3=JSON.parse('{{datos_json3|safe}}');
+    var datos2=JSON.parse('{{datos_json2|safe}}');
+    var myChart2=echarts.init(document.getElementById('chart1'));
+    var option2 = {
+                  tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                      // Use axis to trigger tooltip
+                      type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
+                    }
+                  },
+                  legend: {},
+                  grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                  },
+                  xAxis: {
+                    type: 'value'
+                  },
+                  yAxis: {
+                    type: 'category',
+                    data: datos3
+                  },
+                  series: datos2
+                    };
+    myChart2.setOption(option2);
+</script>
+{% endblock %}

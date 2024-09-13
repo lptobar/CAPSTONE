@@ -1,4 +1,4 @@
-# <p align="center">Plataforma de Administración Estudiantil<br>Colegio Santa Margarita de Escocia.</p>
+# <p align="center">Plataforma de Administración Estudiantil<br>Colegio Santa Margarita de Escocia</p>
 
 ### PARTICIPANTES:
 - Matias Cid

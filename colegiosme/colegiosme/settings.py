@@ -101,9 +101,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'colegiosme',
-        'USER': 'admin-colegiosme',
-        'PASSWORD': 'colegiosme-admin-2023',
-        'HOST': '190.161.35.216',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
         'PORT': '3306'
     }
 }

@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-98(zr8%_rp)c5^z4fasdfv!$awj7_rob@q4)hhk^gsa&80-_%6'
 
 SILENCED_SYSTEM_CHECKS = ["auth.W004"]
-
+ 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

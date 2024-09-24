@@ -1,0 +1,6 @@
+django
+crispy_bootstrap5
+djangorestframework
+mysqlclient
+transbank-sdk
+xhtml2pdf

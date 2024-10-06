@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 3 %}
+    {% load crispy_forms_tags %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-creacion">
+            <div class="container card-title text-white">
+                <div class="row my-1">
+                    <div class="col-6">
+                        <h6 class="start">{{ curso.lista_curso.nombre_curso }} {{ curso.tipo_curso.nombre_tipo_curso }} - {{ curso.anio_curso }} - {{ curso.jornada.nombre_jornada }}</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-end">{{ fecha }}</h6>
+                    </div>
+                </div>
+                <div class="card-title">
+                    <h1 class="text-center">Registrar anotación</h1>
+                </div>
+                <div class="text-center">
+                    <h3 style="color: lightgray"> {{ persona.p_nombre|upper }} {{ persona.ap_paterno|upper }} {{ persona.ap_materno|upper }} </h3>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <form action="" class="text-center" id="formulario_contacto" method="POST" autocomplete="off">
+                        {% csrf_token %}
+                        {{ formulario | crispy }}
+                        <br>
+                        <hr>
+                        <div class="d-flex justify-content-center">
+                            <a href="javascript:history.back()"class="btn btn-secondary">Cancelar</a>&nbsp;
+                            <button type="submit" class="btn btn-primary">Crear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{%endblock%}

@@ -1,0 +1,35 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom d-print-none">
+    <div class="container-fluid">
+        <button class="btn btn-primary" id="sidebarToggle">Portal Académico</button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mt-2 mt-lg-0 align-items-end">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'inicio' %}">
+                        <i class="bi bi-house"></i> Inicio
+                    </a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#!">Profesores</a></li>
+                <li class="nav-item dropdown">
+                    <button class="btn dropdown-toggle nav-link" data-bs-toggle="dropdown">
+                        Novedades y Protocolos
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Seguridad escolar</a></li>
+                        <li><a class="dropdown-item" href="#">Violencia escolar</a></li>
+                        <li><a class="dropdown-item" href="#">Accidente escolar</a></li>
+                        <li><a class="dropdown-item" href="#">Acoso cibernético</a></li>
+                        <li><a class="dropdown-item" href="#">En caso de enfermedad</a></li>
+                        <li><a class="dropdown-item" href="#">Buena convivencia</a></li>
+                        <li><a class="dropdown-item" href="#">Sismo</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#!">Contacto</a></li>
+                <a class="navbar-brand" href="#!">
+                    <img src="{% static 'img/logo-colegio.svg' %}" width="20px">
+                </a>
+            </ul>
+        </div>
+    </div>
+</nav>

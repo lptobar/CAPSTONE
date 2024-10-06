@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario >= 4 %}
+  <div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-mrg-login my-2">
+      <div class="card-title my-3">
+        <h1 class="text-center text-white">La matricula ha sido registrada correctamente</h1>
+      </div>
+      <div class="card card-login my-3">
+        <div class="card-body">
+          <p>La matricula de <strong>ID: {{ matricula.id_matricula }}</strong> se ha generado correctamente con los siguientes datos:</p>
+          <p>Alumno: {{ alumno }}</p>
+          <p>Curso: {{ curso }} - {{ curso.jornada.nombre_jornada }}</p>
+        </div>
+        <a href="{% url 'informe-matricula' matricula.id_matricula %}" class="btn btn-primary" >Descargar contrato</a>
+        <a class="btn btn-secondary" href="{% url 'inicio' %}">Volver al inicio</a>
+      </div>
+    </div>
+  </div>
+{% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

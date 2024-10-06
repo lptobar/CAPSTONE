@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="card card-listar">
+        <div id="carouselExampleDark" class="carousel carousel-dark slide">
+            <div class="carousel-inner">
+                {% for noticia in noticias %}
+                <div class="carousel-item active" data-bs-interval="2000">
+                    <img src="{{ noticia.imagen_noticia }}" class="d-block w-100">
+                    <div class="carousel-caption d-none d-sm-block">
+                        <div class="card-body card-creacion mx-auto text-center">
+                            <h5 class="text-white">{{ noticia.titulo_noticia|upper }}</h5>
+                            <p class="text-white">{{ noticia.subtitulo_noticia }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="carousel-item active" data-bs-interval="2000">
+                    <img src="https://www.colegiosme.cl/galeriafotos/sensibilización-PIE/9.jpg" class="d-block w-100 imagen-noticia">
+                </div>
+                {% endfor %}
+            </div>
+            {% if noticias.count > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    
+{% endblock %}

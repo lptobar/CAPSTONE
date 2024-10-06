@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 2 %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-header text-center text-white">
+            <h1>Alumnos a cargo</h1>
+        </div>
+        <div class="card">
+            <table border="1" class="table table-sm">
+                <thead>
+                    <tr class="table-primary text-white">
+                        <th>Nombre Completo</th>
+                        <th>RUT</th>
+                        <th class="d-none d-md-table-cell"></th>
+                    </tr>
+                </thead>
+                {% for alumno in alumnos %}
+                <tbody>
+                    <tr>
+                        <td class="centered">{{ alumno|title }}</td>
+                        <td class="centered">{{ alumno.persona.rut }}</td>
+                        <td class="centered">
+                            <a class="btn btn-primary" href="{% url 'notas-estudiante' alumno.persona.rut %}">Ver
+                                notas</a>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block css %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .centered {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

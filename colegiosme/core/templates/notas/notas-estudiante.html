@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load range_loop %}
+{% load grade_calculator %}
+{% load static %}
+
+{% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario <= 2 %} <div
+    class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-header text-center text-white">
+            {% if request.user.tipo_usuario.id_tipo_usuario == 1 %}
+            <h1>Mis Notas</h1>
+            {% else %}
+            <h1>{{ alumno|title }}</h1>
+            {% endif %}
+        </div>
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre asignatura</th>
+                        <th>Nota 1</th>
+                        <th>Nota 2</th>
+                        <th>Nota 3</th>
+                        <th>Nota 4</th>
+                        <th>Nota 5</th>
+                        <th>Nota 6</th>
+                        <th>Nota 7</th>
+                        <th>Promedio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in asignaturas %}
+                    <tr>
+                        <td>{{ d.asignatura.lista_asignatura.nombre_asignatura }}</td>
+                        {% for nota in d.notas %}
+                        <td>{{ nota }}</td>
+                        {% endfor %}
+
+                        {% for i in d.notas.count|getnumber %}
+                        <td></td>
+                        {% endfor %}
+                        <td>{{ d.promedio }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>Promedio Final:</td>
+                        {% for i in '0123456' %}
+                        <td></td>
+                        {% endfor %}
+                        <td>{{ promedio_total }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="d-flex justify-content-center my-1">
+                    <a href="{% url 'informe-notas-estudiante' alumno.persona.rut %}" class="btn btn-primary">Informe de notas</a>
+                </div>
+                <div class="d-flex justify-content-center my-1">
+                    {% if request.user.tipo_usuario.id_tipo_usuario == 2 %}
+                    <a href="{% url 'portal-notas-apoderado' %}" class="btn btn-secondary">Volver</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% else %}
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="card card-listar">
+            <div class="card-title">
+                <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endblock %}

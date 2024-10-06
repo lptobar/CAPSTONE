@@ -1,0 +1,60 @@
+<div class="border-end bg-white d-print-none" id="sidebar-wrapper">
+    <div class="sidebar-heading border-bottom bg-light">
+        <i class="bi bi-circle-square"></i> Portal Académico
+    </div>
+    {% if request.user.is_authenticated %}
+    <div class="sidebar-heading border-bottom bg-light text-center">
+        <div class="row">
+            <a>{{ request.user.persona.p_nombre|title }}</a>
+        </div>
+        <div class="row">
+            <a>{{ request.user.persona.ap_paterno|title }}</a>
+        </div>
+        <a class="mod-text">{{ request.user.tipo_usuario.nombre_tipo_usuario }}</a>
+    </div>
+    {% endif %}
+    <div class="list-group list-group-flush">
+        {% if request.user.is_authenticated %}
+
+        {% if request.user.tipo_usuario.id_tipo_usuario == 5 %}
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'notas-curso' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-cursos' %}"><i class="bi bi-journals"></i> Administración de Cursos</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-asignaturas' %}"><i class="bi bi-journal-text"></i> Administración de Asignaturas</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-usuarios' %}"><i class="bi bi-people-fill"></i> Administrador de Usuarios</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
+        {% elif request.user.tipo_usuario.id_tipo_usuario == 4 %}
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
+        {% elif request.user.tipo_usuario.id_tipo_usuario == 3 %}
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-apoderado' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-asistencia' %}"><i class="bi bi-file-earmark-text"></i> Asistencias</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-anotaciones' %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-mensualidades' %}"><i class="bi bi-journal-bookmark-fill"></i> Pago de Mensualidad</a>
+        {% elif request.user.tipo_usuario.id_tipo_usuario == 2 %}    
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-profesor' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'asistencia-cursos' %}"><i class="bi bi-list-check"></i> Asistencias</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'anotaciones-asignaturas' %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
+        {% elif request.user.tipo_usuario.id_tipo_usuario == 1 %}
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'notas-estudiante' user.persona.rut %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'asistencia-estudiante' user.persona.rut %}"><i class="bi bi-file-earmark-text"></i> Asistencia</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'ver-anotaciones' user.persona.rut %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
+        {% endif %}
+        <a class="sesion list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'logout' %}"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+        {% else %}
+        <a class="sesion list-group-item list-group-item-action list-group-item-light p-3" href="#" id="login-button" onclick="login()"> <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</a>
+        <div class="container">
+            <p class="mod-text p-3">¡Nos actualizamos! Ahora podrás recibir en todos tus dispositivos una nueva experiencia de aprendizaje. Una forma mucho más simple de acceder a tu información escencial.</p>
+            <p class="mod-text p-3">Encontrarás funciones como:</p>
+        </div>
+        <a class="mod-text p-3">
+            <i class="bi bi-pencil-square"></i> Calificaciones</a>
+        <a class="mod-text p-3">
+            <i class="bi bi-journal"></i> Anotaciones</a>
+        <a class="mod-text p-3">
+            <i class="bi bi-card-checklist"></i> Asistencia</a>
+        <a class="mod-text p-3">
+            <i class="bi bi-file-earmark-fill"></i> Informes</a>
+        {% endif %}
+    </div>
+</div>

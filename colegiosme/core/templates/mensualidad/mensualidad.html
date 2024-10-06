@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card card-mrg-matricula">
+    <div class="card-header text-center card-mrg-matricula">
+        <h1 class="text-white">Pago de Mensualidades</h1>
+    </div>
+    <div class="card card-matricula">
+        <table class="table table-sm table-striped ">
+            <thead>
+                <tr class="table-primary text-white">
+                    <th>Selección</th>
+                    <th>Id Mensualidad</th>
+                    <th>Nombre Alumno</th>
+                    <th>Tipo de Cobro</th>
+                    <th>Estado</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in Responsable %}
+                {% for m in Matricula %}
+                {% if r.run_alumno.run|safe == m.run_alumno.run|safe %}
+                {% for mens in Mensualidad %}
+                {% if mens.id_matricula.id_matricula|safe == m.id_matricula|safe %}
+
+                {% if mens.id_estado_mensualidad.id_estado_mensualidad != 2 %}
+                <tr class="table-light">
+                    <td>
+                        <a href="{% url 'agregar-mensualidad' mens.id_mensualidad %}" class="btn btn-warning"> agregar al pago </a>
+                    </td>
+                    <td>{{ mens.id_mensualidad }}</td>
+                    <td>{{ m.run_alumno.run.p_nombre|capfirst }} {{m.run_alumno.run.s_nombre|capfirst}}
+                        {{ m.run_alumno.run.appaterno|capfirst }} {{m.run_alumno.run.apmaterno|capfirst}}</td>
+                    <td>{{ mens.id_tipo_mensualidad }}</td>
+                    <td>{{ mens.id_estado_mensualidad }}</td>
+                    <td>{{ mens.fecha_vencimiento }}</td>
+                    <td>{{ mens.monto_mensualidad }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="card-body">
+            <div class="row mt-3">
+                {% include "carrito/carro.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

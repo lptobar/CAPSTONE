@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if request.user.tipo_usuario.id_tipo_usuario >= 4 %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white">Listar noticias</h1>
+        </div>
+        <div class="card">
+            <div class="text-center my-1">
+                <a href="{% url 'crear-noticia' %}" class="btn btn-primary">Crear noticia</a>
+            </div>
+            <div class="container row d-flex justify-content-between my-3">
+                {% for noticia in noticias %}
+                <div class="col-md-6 my-1">
+                    <div class="card h-100 w-100">
+                        <img src="{{ noticia.imagen_noticia.url }}" class="card-img-top img-noticia">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ noticia.titulo_noticia|upper }}</h5>
+                            <p class="card-text">{{ noticia.subtitulo_noticia }}</p>
+                            <div class="d-flex justify-content-between my-1">
+                                <a href="{% url 'ver-noticia' noticia.id_noticia %}" class="btn btn-primary">Ir a la noticia</a>
+                                <a href="{% url 'editar-noticia' noticia.id_noticia %}" class="btn btn-secondary">Editar noticia</a>
+                                <a href="{% url 'eliminar-noticia' noticia.id_noticia %}" class="btn btn-danger">Eliminar noticia</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

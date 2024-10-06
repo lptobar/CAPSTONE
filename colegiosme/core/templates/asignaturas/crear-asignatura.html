@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 5 %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-creacion">
+        <div class="card-title">
+            <h1 class="text-center text-white">Crear asignatura</h1>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form action="" class="text-center" id="formulario_contacto" method="POST"
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ formulario | crispy }}
+                    <hr>
+                    <div class="d-flex justify-content-center">
+                        <div class="d-flex justify-content-center">
+                            <a href="{% url 'listar-asignaturas' %}" class="btn btn-secondary">Cancelar</a>
+                            &nbsp;
+                            <button type="submit" class="btn btn-primary">Crear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -27,9 +27,9 @@
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
         {% elif request.user.tipo_usuario.id_tipo_usuario == 3 %}
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-apoderado' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-asistencia' %}"><i class="bi bi-file-earmark-text"></i> Asistencias</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-anotaciones' %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-profesor' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'asistencia-cursos' %}"><i class="bi bi-file-earmark-text"></i> Asistencias</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'anotaciones-asignaturas' %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-mensualidades' %}"><i class="bi bi-journal-bookmark-fill"></i> Pago de Mensualidad</a>
         {% elif request.user.tipo_usuario.id_tipo_usuario == 2 %}    
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-profesor' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>

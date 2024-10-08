@@ -40,6 +40,7 @@ urlpatterns = [
 
     ## -- USUARIOS -- ##
     path('listar-usuarios/', listar_usuarios, name='listar-usuarios'),
+    path('crear-usuario/', crear_usuario, name='crear-usuario'),
 
     ## -- MATRICULAS -- ##
     path('matricula-estudiante/', matricula_estudiante, name='matricula-estudiante'),

@@ -28,9 +28,9 @@ def home(request):
     }
 
     # estado = EstadoUsuario(pk=2)
-    # persona = Persona(pk=2)
+    # persona = Persona(pk=1)
     # tipo = TipoUsuario(pk=5)
-    # Usuario.objects.create_user(username='le.plaza', password='123', estado_usuario=estado, persona=persona, tipo_usuario=tipo)
+    # Usuario.objects.create_user(username='le.plaza', password='1234', estado_usuario=estado, persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -38,7 +38,10 @@ def home(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            messages.success(request, 'Inicio de sesión correcto, bienvenido!')
             login(request, user)
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos, intente nuevamente.')
 
     return render(request, 'index.html', data)
 
@@ -106,7 +109,7 @@ def crear_anotacion(request, id):
     formulario = AnotacionForm()
 
     if request.method == 'POST':
-        formulario = AnotacionForm(request.POST, id=id)
+        formulario = AnotacionForm(request.POST)
         if formulario.is_valid():
             formulario.save()
             pass
@@ -350,15 +353,11 @@ def asistencia_estudiante(request, id):
                 { 'value': dataTotal['Total_Inasistencia'], 'name': 'Ausentes' },
                 { 'value': dataTotal['Total_Justificado'], 'name': 'Justificado' }]
     }
-
-    print(datos)
     
     datos_json = json.dumps(datos)
     context = {
         'datos_json': datos_json, 
     }
-
-    print(datos_json)
 
     return render(request,'asistencia/asistencia-estudiante.html', context)
 
@@ -388,7 +387,7 @@ def registrar_asistencia(request, id):
 
     data = {
         
-        'curso': matriculas.first().curso,
+        'curso': curso,
         'matriculas': matriculas,
         'alumnos': alumnos_asistencia,
         'fecha': fecha_actual
@@ -589,7 +588,7 @@ def crear_asignatura(request):
     }
 
     if request.method == 'POST':
-        post_data=request.POST.copy()
+        post_data = request.POST.copy()
         formulario = CursoForm(data=request.POST)
 
         if formulario.is_valid:
@@ -624,6 +623,35 @@ def listar_usuarios(request):
     }
 
     return render(request, 'usuarios/listar-usuarios.html', data)
+
+def crear_usuario(request):
+    data = {
+        'formulario_persona': PersonaForm(),
+        'formulario_usuario': TipoUsuarioForm(),
+    }
+
+    if request.method == 'POST':
+        formulario_persona = PersonaForm(data=request.POST)
+        formulario_usuario = TipoUsuarioForm(data=request.POST)
+        if formulario_persona.is_valid() and formulario_usuario.is_valid():
+            tipo_usuario = formulario_usuario.cleaned_data['tipo_usuario']
+            cargo_funcionario = CargoFuncionario.objects.get(nombre_cargo_funcionario=tipo_usuario.nombre_tipo_usuario)
+
+            persona = formulario_persona.save()
+            Funcionario.objects.create(cargo_funcionario=cargo_funcionario, persona=persona)
+            Usuario.objects.create_user(
+                username=f'{persona.p_nombre:2}.{persona.ap_paterno}',
+                password='123',
+                estado_usuario=EstadoUsuario(pk=2),
+                persona=persona,
+                tipo_usuario=TipoUsuario(pk=tipo_usuario.id_tipo_usuario)
+            )
+
+            messages.success(request, 'Usuario creado con exito.')
+
+        return redirect(to='listar-usuarios')
+
+    return render(request, 'usuarios/crear-usuario.html', data)
 
 def eliminar_usuario(request, id):
     pass

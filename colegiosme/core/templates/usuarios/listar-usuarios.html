@@ -11,49 +11,43 @@
         <div class="card">
             <div class="container">
                 <div class="row my-3">
-                    <div class="col-1">
-                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#colPositivas" aria-controls="colPositivas">
-                            <i class="bi bi-plus-lg"></i>
-                        </button>
-                    </div>
-                    <div class="col-11">
-                        <h2>Profesores</h2>
+                    <div class="col-12">
+                        <h2>Usuarios:</h2>
                     </div>
                 </div>
-                <div class="collapse" id="colPositivas">
-                    <div class="card card-body">
-                        <div class="row mt-3">
-                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center mb-3">
-                                <a href="#!" class="btn btn-primary">Crear nuevo profesor</a>
-                            </div>
+
+                <div class="card card-body">
+                    <div class="row mt-3">
+                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center mb-3">
+                            <a href="{% url 'crear-usuario' %}" class="btn btn-primary">Crear nuevo usuario</a>
                         </div>
-                        <table class="table table-sm table-striped ">
-                            <thead>
-                                <tr class="table-primary text-white">
-                                    <th>Nombre Completo</th>
-                                    <th>RUT</th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for funcionario in funcionarios %}
-                                <tr class="table-light table-striped">
-                                    <td>{{ funcionario }}</td>
-                                    <td>{{ funcionario.persona.rut }}</td>
-                                    <td>
-                                        <a href="#!" type="button"class="btn btn-secondary">Editar usuario</a>
-                                    </td>
-                                    <td>
-                                        <a href="#!" type="button" class="btn btn-danger">Eliminar usuario</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
                     </div>
+                    <table class="table table-sm table-striped ">
+                        <thead>
+                            <tr class="table-primary text-white">
+                                <th>Nombre Completo</th>
+                                <th>RUT</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for funcionario in funcionarios %}
+                            <tr class="table-light table-striped">
+                                <td>{{ funcionario }}</td>
+                                <td>{{ funcionario.persona.rut }}</td>
+                                <td>
+                                    <a href="#!" type="button" class="btn btn-secondary">Editar usuario</a>
+                                </td>
+                                <td>
+                                    <a href="#!" type="button" class="btn btn-danger">Eliminar usuario</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
+
                 <hr>
             </div>
         </div>

@@ -5,7 +5,7 @@ from .models import *
 class AnotacionForm(forms.ModelForm):
     class Meta:
         model = Anotacion
-        fields = ('__all__')
+        fields = ('descripcion_anotacion', 'tipo_anotacion')
 
 class AsignaturaForm(forms.ModelForm):
     class Meta:
@@ -29,7 +29,7 @@ class CursoForm(forms.ModelForm):
         fields = ['id_curso', 'lista_curso', 'tipo_curso', 'jornada', 'anio_curso', 'funcionario', 'matriculas_disponibles']
         
     def __init__(self, *args, **kwargs):
-        super(CursoForm,self).__init__(*args,**kwargs)
+        super(CursoForm, self).__init__(*args, **kwargs)
         self.fields['id_curso'].widget.attrs['class'] = 'ocultar'
 
 class NoticiaForm(forms.ModelForm):
@@ -43,3 +43,18 @@ class NoticiaForm(forms.ModelForm):
         super(NoticiaForm, self).__init__(*args, **kwargs)
         self.fields['fecha_noticia'].widget = forms.HiddenInput()
         self.fields['fecha_noticia'].initial = date.today()
+
+class PersonaForm(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = '__all__'
+
+class TipoUsuarioForm(forms.ModelForm):
+    tipo_usuario = forms.ModelChoiceField(
+        queryset = TipoUsuario.objects.filter(id_tipo_usuario__gte=1),
+        empty_label = 'Elige un tipo de usuario'
+    )
+
+    class Meta:
+        model = TipoUsuario
+        fields = ['tipo_usuario']

@@ -9,9 +9,15 @@ class Nacionalidad(models.Model):
     id_nacionalidad = models.AutoField(primary_key=True)
     nombre_nacionalidad = models.CharField(max_length=60)
 
+    def __str__(self):
+        return f'{self.nombre_nacionalidad}'
+
 class Genero(models.Model):
     id_genero = models.AutoField(primary_key=True)
     nombre_genero = models.CharField(max_length=10)
+
+    def __str__(self):
+        return f'{self.nombre_genero}'
 
 class Persona(models.Model):
     id_persona = models.AutoField(primary_key=True)
@@ -242,7 +248,7 @@ class ListaAsignatura(models.Model):
         return f'{self.nombre_asignatura}'
 
 class Asignatura(models.Model):
-    id_asignatura = models.AutoField(primary_key=True)
+    id_asignatura = models.CharField(primary_key=True, unique=True, max_length=100)
     lista_asignatura = models.ForeignKey('ListaAsignatura', on_delete=models.PROTECT, db_column='id_lista_asignatura')
     curso = models.ForeignKey('Curso', on_delete=models.PROTECT, db_column='id_curso')
     funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='id_funcionario')

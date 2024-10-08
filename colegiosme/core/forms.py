@@ -74,6 +74,12 @@ class TareaForm(forms.ModelForm):
         self.fields['fecha_fin'].widget.attrs.update({'class': 'form-control', 'id': 'id_fecha_fin'})
 
 class EntregaTareaForm(forms.ModelForm):
+  
     class Meta:
         model=EntregaTarea
         fields=['comentario','archivos']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Agregar clases CSS a los campos del formulario
+        self.fields['comentario'].widget.attrs.update({'class': 'form-control'})

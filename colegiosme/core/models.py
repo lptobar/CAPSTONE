@@ -248,6 +248,9 @@ class Asignatura(models.Model):
     curso = models.ForeignKey('Curso', on_delete=models.PROTECT, db_column='id_curso')
     funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='id_funcionario')
 
+    def __str__(self):
+        return f'{self.lista_asignatura}'
+
 ## -- ANOTACIONES -- ##
 class TipoAnotacion(models.Model):
     id_tipo_anotacion = models.AutoField(primary_key=True)
@@ -291,6 +294,7 @@ class Archivo(models.Model):
 
     def __str__(self):
         return self.archivo.name
+    
 ## --ENTREGA TAREA-- ##
 class EntregaTarea(models.Model):
     tarea=models.ForeignKey('Tarea', on_delete=models.CASCADE)

@@ -21,7 +21,7 @@
             <tr>
                 <td>{{ tarea.titulo }}</td>
                 <td>{{ tarea.curso }}</td>
-                <td>{{ tarea.asignatura }}</td>
+                <td>{{ tarea.asignatura.lista_asignatura }}</td>
                 <td>{{ tarea.fecha_fin }}</td>
                 <td>
                     <a href="{% url 'ver_entrega_tarea' tarea.id_tarea %}" class="btn btn-info btn-sm">Ver Entregas</a>

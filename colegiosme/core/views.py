@@ -27,9 +27,9 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    # persona = Persona(pk=9)
-    # tipo = TipoUsuario(pk=1)
-    # Usuario.objects.create_user(username='jaramillo', password='1234', persona=persona, tipo_usuario=tipo)
+    #persona = Persona(pk=4)
+    #tipo = TipoUsuario(pk=1)
+    #Usuario.objects.create_user(username='juan', password='1234', persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -983,14 +983,15 @@ def lista_tareas(request):
 def ver_entrega_tarea(request, id_tarea):
     tarea=Tarea.objects.get(id_tarea=id_tarea)
     entregas=EntregaTarea.objects.filter(tarea=tarea)
-
+   
     alumnos=Alumno.objects.filter(matricula__curso=tarea.curso)
     alumnos_entregaron=entregas.values_list('alumno',flat=True)
     return render(request,'tareas/ver_entregas_tarea.html',{
         'tarea':tarea,
         'entregas':entregas,
         'alumnos': alumnos,
-        'alumnos_que_entregaron': alumnos_entregaron
+        'alumnos_que_entregaron': alumnos_entregaron,
+
     })
 ## --TAREA VISTA ALUMNO-- ##
 
@@ -1004,6 +1005,7 @@ def ver_tareas_alumno(request):
 def entregar_tarea(request,id_tarea):
     tarea=Tarea.objects.get(id_tarea=id_tarea)
     alumno=Alumno.objects.get(persona=request.user.persona)
+  
 
     if timezone.now()>tarea.fecha_fin:
         return redirect('tareas_alumno')
@@ -1023,6 +1025,3 @@ def entregar_tarea(request,id_tarea):
     else:
         form=EntregaTareaForm()
     return render(request,'tareas/entregar_tarea.html',{'form':form, 'tarea':tarea})
-
-
-    

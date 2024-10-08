@@ -1,30 +1,65 @@
 {% extends 'base.html' %}
+
+{% block title %}Detalle de la Tarea{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center">Entregas para la Tarea: {{ tarea.titulo }}</h1>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <h3>Alumnos que entregaron</h3>
-            <ul class="list-group">
-                {% for entrega in entregas %}
-                <li class="list-group-item">
-                    <strong>{{ entrega.alumno.persona }}</strong> - Comentario: {{ entrega.comentario }}
-                </li>
-                {% empty %}
-                <li class="list-group-item text-center">Ningún alumno ha entregado aún.</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-md-6">
-            <h3>Alumnos que no entregaron</h3>
-            <ul class="list-group">
-                {% for alumno in alumnos %}
-                    {% if alumno.id not in alumnos_que_entregaron %}
-                    <li class="list-group-item">{{ alumno.persona }}</li>
+<div class="container">
+    <h2 class="my-4">{{ tarea.titulo }}</h2>
+    <p>{{ tarea.descripcion }}</p>
+    <p><strong>Fecha Fin:</strong> {{ tarea.fecha_fin }}</p>
+
+    <h3 class="mt-4">Archivos de la Tarea</h3>
+    <ul class="list-group mb-4">
+        {% for archivo in archivos_tarea %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{{ archivo.archivo.url }}">{{ archivo.archivo.name }}</a>
+                </div>
+                <div>
+                    <a href="{{ archivo.archivo.url }}" class="btn btn-sm btn-primary" download>Descargar Archivo</a>
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay archivos asociados a esta tarea.</li>
+        {% endfor %}
+    </ul>
+
+    <h3 class="mt-4">Alumnos que han entregado la tarea</h3>
+    <ul class="list-group mb-4">
+        {% for entrega in entregas %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    Estudiante: {{ entrega.alumno.persona }} - Entregado el: {{ entrega.fecha_entrega }}
+                    {% if entrega.archivos.all %}
+                        <ul class="mt-2">
+                            {% for archivo in entrega.archivos.all %}
+                                <li>
+                                    <a href="{{ archivo.archivo.url }}" class="btn btn-sm btn-secondary" download>Descargar Archivo de Entrega</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
+                </div>
+                {% if entrega.comentario %}
+                    <div><strong>Comentario:</strong> {{ entrega.comentario }}</div>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay entregas para esta tarea.</li>
+        {% endfor %}
+    </ul>
+
+    <h3 class="mt-4">Alumnos que NO han entregado la tarea</h3>
+    <ul class="list-group mb-4">
+        {% for alumno in alumnos %}
+            {% if alumno.id_alumno not in alumnos_que_entregaron %}
+                <li class="list-group-item">{{ alumno.persona }} - No ha entregado la tarea.</li>
+            {% endif %}
+        {% empty %}
+            <li class="list-group-item">Todos los alumnos han entregado la tarea.</li>
+        {% endfor %}
+    </ul>
+
+ 
 </div>
 {% endblock %}

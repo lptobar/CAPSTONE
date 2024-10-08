@@ -958,9 +958,11 @@ def crear_tarea(request):
             tarea = form.save(commit=False)
             tarea.funcionario = profesor
             tarea.save()
-            # Guardar más de un archivo
+            
+            # Guardar más de un archivo y asociarlo correctamente con la tarea
             for archivo in request.FILES.getlist('archivos'):
-                Archivo.objects.create(archivo=archivo, tarea=tarea)
+                nuevo_archivo = Archivo.objects.create(archivo=archivo)
+                tarea.archivos.add(nuevo_archivo)  # Asociar archivo con la tarea
 
             return redirect('lista_tareas')
         else:
@@ -970,6 +972,7 @@ def crear_tarea(request):
         form = TareaForm()
 
     return render(request, 'tareas/crear_tarea.html', {'form': form})
+
 
 
 
@@ -1002,26 +1005,27 @@ def ver_tareas_alumno(request):
     return render(request,'tareas/tareas_alumno.html',{'tareas':tareas})
 
 
-def entregar_tarea(request,id_tarea):
-    tarea=Tarea.objects.get(id_tarea=id_tarea)
-    alumno=Alumno.objects.get(persona=request.user.persona)
-  
+def entregar_tarea(request, id_tarea):
+    tarea = Tarea.objects.get(id_tarea=id_tarea)
+    alumno = Alumno.objects.get(persona=request.user.persona)
 
-    if timezone.now()>tarea.fecha_fin:
+    if timezone.now() > tarea.fecha_fin:
         return redirect('tareas_alumno')
 
-    if request.method=='POST':
-        form = EntregaTareaForm(request.POST,request.FILES)
+    if request.method == 'POST':
+        form = EntregaTareaForm(request.POST, request.FILES)
         if form.is_valid():
-            entrega=form.save(commit=False)
-            entrega.tarea=tarea
-            entrega.alumno=alumno
+            entrega = form.save(commit=False)
+            entrega.tarea = tarea
+            entrega.alumno = alumno
             entrega.save()
-        #guardar más de un archivo
-            for archivo in request.FILES.getlist('archivos'):
-                ArchivoEntrega.objects.create(archivo=archivo, entrega=entrega)
             
+            # Guardar más de un archivo y asociarlo con la entrega
+            for archivo in request.FILES.getlist('archivos'):
+                nuevo_archivo = ArchivoEntrega.objects.create(archivo=archivo)
+                entrega.archivos.add(nuevo_archivo)  # Asociar archivo con la entrega
+
             return redirect('tareas_alumno')
     else:
-        form=EntregaTareaForm()
-    return render(request,'tareas/entregar_tarea.html',{'form':form, 'tarea':tarea})
+        form = EntregaTareaForm()
+    return render(request, 'tareas/entregar_tarea.html', {'form': form, 'tarea': tarea})

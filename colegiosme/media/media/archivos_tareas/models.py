@@ -9,21 +9,15 @@ class Nacionalidad(models.Model):
     id_nacionalidad = models.AutoField(primary_key=True)
     nombre_nacionalidad = models.CharField(max_length=60)
 
-    def __str__(self):
-        return f'{self.nombre_nacionalidad}'
-
 class Genero(models.Model):
     id_genero = models.AutoField(primary_key=True)
     nombre_genero = models.CharField(max_length=10)
-
-    def __str__(self):
-        return f'{self.nombre_genero}'
 
 class Persona(models.Model):
     id_persona = models.AutoField(primary_key=True)
     rut = models.BigIntegerField()
     p_nombre = models.CharField(max_length=40)
-    s_nombre = models.CharField(max_length=40, blank=True)
+    s_nombre = models.CharField(max_length=40)
     ap_paterno = models.CharField(max_length=40)
     ap_materno = models.CharField(max_length=40)
     email = models.CharField(max_length=45)
@@ -34,14 +28,16 @@ class Persona(models.Model):
         return f'{self.p_nombre} {self.s_nombre} {self.ap_paterno} {self.ap_materno}'
 
 ## -- USUARIOS -- ##
+class EstadoUsuario(models.Model):
+    id_estado_usuario = models.AutoField(primary_key=True)
+    nombre_estado_usuario = models.CharField(max_length=40)
+
 class TipoUsuario(models.Model):
     id_tipo_usuario = models.AutoField(primary_key=True)
     nombre_tipo_usuario = models.CharField(max_length=40)
 
 class Usuario(AbstractUser):
-    first_name = None
-    last_name = None
-
+    estado_usuario = models.ForeignKey('EstadoUsuario', on_delete=models.PROTECT, db_column='id_estado_usuario')
     tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.PROTECT, db_column='id_tipo_usuario')
     persona = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_persona')
 
@@ -104,7 +100,7 @@ class Noticia(models.Model):
     subtitulo_noticia = models.CharField(max_length=45)
     cuerpo_noticia = models.CharField(max_length=45)
     fecha_noticia = models.DateField()
-    imagen_noticia = models.ImageField(upload_to='media/noticias/')
+    imagen_noticia = models.CharField(max_length=45)
     tipo_noticia = models.ForeignKey('TipoNoticia', on_delete=models.PROTECT, db_column='id_tipo_noticia')
     prioridad_noticia = models.ForeignKey('PrioridadNoticia', on_delete=models.PROTECT, db_column='id_prioridad_noticia')
     funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='id_funcionario')
@@ -141,6 +137,7 @@ class Apoderado(models.Model):
     persona = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_persona')
     nivel_academico = models.ForeignKey('NivelAcademico', on_delete=models.PROTECT, db_column='id_nivel_academico')
 
+
 ## -- GRUPO FAMILIAR -- ##
 class Parentesco(models.Model):
     id_parentesco = models.AutoField(primary_key=True)
@@ -162,29 +159,20 @@ class TipoCurso(models.Model):
     id_letra_curso = models.AutoField(primary_key=True)
     nombre_tipo_curso = models.CharField(max_length=1)
 
-    def __str__(self):
-        return f'{self.nombre_tipo_curso}'
-
 class ListaCurso(models.Model):
     id_lista_curso = models.AutoField(primary_key=True)
     nombre_curso = models.CharField(max_length=40)
-
-    def __str__(self):
-        return f'{self.nombre_curso}'
 
 class Jornada(models.Model):
     id_jornada = models.AutoField(primary_key=True)
     nombre_jornada = models.CharField(max_length=10)
 
-    def __str__(self):
-        return f'{self.nombre_jornada}'
-
 class Curso(models.Model):
-    id_curso = models.CharField(primary_key=True, unique=True, max_length=100)
+    id_curso = models.AutoField(primary_key=True)
     anio_curso = models.IntegerField()
     matriculas_disponibles = models.IntegerField()
     lista_curso = models.ForeignKey('ListaCurso', on_delete=models.PROTECT, db_column='id_lista_curso')
-    estado_curso = models.ForeignKey('EstadoCurso', on_delete=models.PROTECT, db_column='id_estado_curso', default=2)
+    estado_curso = models.ForeignKey('EstadoCurso', on_delete=models.PROTECT, db_column='id_estado_curso')
     tipo_curso = models.ForeignKey('TipoCurso', on_delete=models.PROTECT, db_column='id_tipo_curso')
     funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='id_profesor_jefe')
     jornada = models.ForeignKey('Jornada', on_delete=models.PROTECT, db_column='id_jornada')
@@ -210,7 +198,7 @@ class EstadoMatricula(models.Model):
     nombre_estado_matricula = models.CharField(max_length=40)
 
 class Matricula(models.Model):
-    id_matricula = models.CharField(primary_key=True, unique=True, max_length=100)
+    id_matricula = models.AutoField(primary_key=True)
     ultimo_curso_aprobado = models.CharField(max_length=40)
     fecha_matricula = models.DateField()
     estado_matricula = models.ForeignKey('EstadoMatricula', on_delete=models.PROTECT, db_column='id_estado_matricula')
@@ -243,13 +231,10 @@ class ListaAsignatura(models.Model):
         return f'{self.nombre_asignatura}'
 
 class Asignatura(models.Model):
-    id_asignatura = models.CharField(primary_key=True, unique=True, max_length=100)
+    id_asignatura = models.AutoField(primary_key=True)
     lista_asignatura = models.ForeignKey('ListaAsignatura', on_delete=models.PROTECT, db_column='id_lista_asignatura')
     curso = models.ForeignKey('Curso', on_delete=models.PROTECT, db_column='id_curso')
     funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='id_funcionario')
-
-    def __str__(self):
-        return f'{self.lista_asignatura}'
 
 ## -- ANOTACIONES -- ##
 class TipoAnotacion(models.Model):
@@ -273,40 +258,3 @@ class Notas(models.Model):
     nota = models.FloatField()
     matricula = models.ForeignKey('Matricula', on_delete=models.PROTECT, db_column='id_matricula')
     lista_asignatura = models.ForeignKey('ListaAsignatura', on_delete=models.PROTECT, db_column='id_lista_asignatura')
-
-## --TAREA-- ##
-class Tarea(models.Model):
-    id_tarea = models.AutoField(primary_key=True)
-    titulo = models.CharField(max_length=100)
-    descripcion = models.TextField()
-    fecha_fin = models.DateTimeField()
-    curso = models.ForeignKey('Curso', on_delete=models.PROTECT)
-    asignatura = models.ForeignKey('Asignatura',on_delete=models.PROTECT, db_column='id_asignatura')
-    funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='profesor')
-    archivos = models.ManyToManyField('Archivo', blank=True, db_column='archivos', related_name='archivos_tareas')
-
-    def __str__(self):
-        return f'Tarea:{self.titulo} para la asignatura {self.asignatura}'
-
-class Archivo(models.Model):
-    archivo = models.FileField(upload_to='media/archivos_tareas/')
-
-    def __str__(self):
-        return self.archivo.name
-    
-## --ENTREGA TAREA-- ##
-class EntregaTarea(models.Model):
-    tarea=models.ForeignKey('Tarea', on_delete=models.CASCADE)
-    alumno=models.ForeignKey('Alumno',on_delete=models.PROTECT)
-    comentario=models.TextField(blank=True)
-    archivos=models.ManyToManyField('ArchivoEntrega',blank=True)
-    fecha_entrega= models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f'Entrega de {self.alumno} para {self.tarea}'
-    
-class ArchivoEntrega(models.Model):
-    archivo=models.FileField(upload_to='media/archivos_entrega/')
-    
-    def __str__(self):
-        return self.archivo.name

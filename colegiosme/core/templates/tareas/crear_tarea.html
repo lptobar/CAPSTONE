@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Crear Tarea</h2>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_curso">Curso</label>
+                    {{ form.curso }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_asignatura">Asignatura</label>
+                    {{ form.asignatura }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_titulo">Título</label>
+                    {{ form.titulo }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_descripcion">Descripción</label>
+                    {{ form.descripcion }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_archivo">Subir Archivos</label>
+                    <input type="file" name="archivos" id="id_archivo" multiple class="form-control">
+                    <small class="form-text text-muted">Puedes subir varios archivos manteniendo presionada la tecla Ctrl (Windows) o Command (Mac).</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_fecha_fin">Fecha Fin</label>
+                    {{ form.fecha_fin }}
+                </div>
+
+                <br>
+                <button type="submit" class="btn btn-success btn-block">Crear Tarea</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block script %}
+<!-- Flatpickr CSS & JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- Luxon JS para manejar zonas horarias -->
+<script src="https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js"></script>
+
+<!-- Inicialización de Flatpickr con la hora de Chile -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Configuración de Luxon para obtener la zona horaria de Chile
+        const DateTime = luxon.DateTime;
+        const chileZone = "America/Santiago";  // Zona horaria de Chile
+
+        // Inicialización de Flatpickr
+        flatpickr("#id_fecha_fin", {
+            enableTime: true,  // Permitir selección de tiempo
+            dateFormat: "Y-m-d H:i",  // Formato de fecha y hora
+            time_24hr: true,  // Mostrar la hora en formato 24 horas
+            defaultDate: DateTime.now().setZone(chileZone).toISO(),  // Hora actual en la zona horaria de Chile
+            onChange: function(selectedDates, dateStr, instance) {
+                // Convertir la fecha seleccionada a la hora de Chile
+                const selectedDateInChile = DateTime.fromJSDate(selectedDates[0]).setZone(chileZone).toISO();
+                console.log("Fecha seleccionada en Chile: ", selectedDateInChile);
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

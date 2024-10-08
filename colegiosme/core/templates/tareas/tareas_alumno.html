@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Tareas Asignadas</h1>
+    <table class="table table-striped mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Título</th>
+                <th>Curso</th>
+                <th>Asignatura</th>
+                <th>Fecha Límite</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tarea in tareas %}
+            <tr>
+                <td>{{ tarea.titulo }}</td>
+                <td>{{ tarea.curso }}</td>
+                <td>{{ tarea.asignatura }}</td>
+                <td>{{ tarea.fecha_fin }}</td>
+                <td>
+                    <a href="{% url 'entregar_tarea' tarea.id_tarea %}" class="btn btn-success btn-sm">Entregar Tarea</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay tareas asignadas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Entregar Tarea: {{ tarea.titulo }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <div class="form-group">
+                <label for="id_comentario">comentario</label>
+                {{ form.comentario }}
+            </div>
+            <div class="form-group">
+                <label for="id_archivo">Subir Archivos</label>
+                <input type="file" name="archivos" id="id_archivo" multiple class="form-control">
+                <small class="form-text text-muted">Puedes subir varios archivos manteniendo presionada la tecla Ctrl (Windows) o Command (Mac).</small>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Entregar Tarea</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

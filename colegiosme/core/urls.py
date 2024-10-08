@@ -41,6 +41,8 @@ urlpatterns = [
     ## -- USUARIOS -- ##
     path('listar-usuarios/', listar_usuarios, name='listar-usuarios'),
     path('crear-usuario/', crear_usuario, name='crear-usuario'),
+    path('editar-usuario/<id>/', editar_usuario, name='editar-usuario'),
+    path('eliminar-usuario/<id>/', eliminar_usuario, name='eliminar-usuario'),
 
     ## -- MATRICULAS -- ##
     path('matricula-estudiante/', matricula_estudiante, name='matricula-estudiante'),
@@ -69,5 +71,13 @@ urlpatterns = [
     path('webpay-respuesta/', webpay_retorno, name='webpay-respuesta'),
 
     ## -- API HELPERS -- ##
-    path('obtener_persona/<rut>/', obtener_persona)
+    path('obtener_persona/<rut>/', obtener_persona),
+
+     ## -- TAREA VISTA PROFESOR -- ##
+    path('tareas/crear/', crear_tarea, name='crear_tarea'),
+    path('tareas/', lista_tareas, name='lista_tareas'),
+    path('tareas/entregas/<int:id_tarea>', ver_entrega_tarea, name='ver_entrega_tarea'),
+     ## -- TAREA VISTA ALUMNO -- ##
+    path('tareas/alumno/', ver_tareas_alumno, name='tareas_alumno'),
+    path('tareas/entregar/<int:id_tarea>', entregar_tarea, name='entregar_tarea'),
 ]

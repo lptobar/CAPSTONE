@@ -27,10 +27,9 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    # estado = EstadoUsuario(pk=2)
-    # persona = Persona(pk=1)
-    # tipo = TipoUsuario(pk=5)
-    # Usuario.objects.create_user(username='le.plaza', password='1234', estado_usuario=estado, persona=persona, tipo_usuario=tipo)
+    # persona = Persona(pk=9)
+    # tipo = TipoUsuario(pk=1)
+    # Usuario.objects.create_user(username='jaramillo', password='1234', persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -617,9 +616,9 @@ def eliminar_asignatura(request, id):
     return redirect(to="listar-asignaturas")
 
 def listar_usuarios(request):
-    funcionarios = Funcionario.objects.all()
+    usuarios = Usuario.objects.all()
     data = {
-        'funcionarios': funcionarios,
+        'usuarios': usuarios,
     }
 
     return render(request, 'usuarios/listar-usuarios.html', data)
@@ -640,9 +639,8 @@ def crear_usuario(request):
             persona = formulario_persona.save()
             Funcionario.objects.create(cargo_funcionario=cargo_funcionario, persona=persona)
             Usuario.objects.create_user(
-                username=f'{persona.p_nombre:2}.{persona.ap_paterno}',
-                password='123',
-                estado_usuario=EstadoUsuario(pk=2),
+                username=f'{persona.p_nombre[:2].lower()}.{persona.ap_paterno.lower()}',
+                password='1234',
                 persona=persona,
                 tipo_usuario=TipoUsuario(pk=tipo_usuario.id_tipo_usuario)
             )
@@ -653,8 +651,20 @@ def crear_usuario(request):
 
     return render(request, 'usuarios/crear-usuario.html', data)
 
+def editar_usuario(request, id):
+    data = {
+        'formulario': PersonaForm(instance=Persona.objects.get(pk=id))
+    }
+
+    return render(request, 'usuarios/editar-usuario.html', data)
+
 def eliminar_usuario(request, id):
-    pass
+    usuario = Usuario.objects.get(pk=id)
+    usuario.delete()
+
+    messages.success(request, 'Usuario eliminado con exito.')
+
+    return redirect(to='listar-usuarios')
 
 ## -- MATRICULAS -- ##
 def matricula_estudiante(request):
@@ -936,4 +946,83 @@ def obtener_persona(request, rut):
         return Response({ 'ok': True, 'data': data })
     except Exception as e:
         return Response({ 'ok': False, 'msg': e })
+
+## --TAREA VISTA PROFESOR-- ##
+
+def crear_tarea(request):
+    profesor = Funcionario.objects.get(persona=request.user.persona)
+
+    if request.method == 'POST':
+        form = TareaForm(request.POST, request.FILES)
+        if form.is_valid():
+            tarea = form.save(commit=False)
+            tarea.funcionario = profesor
+            tarea.save()
+            # Guardar más de un archivo
+            for archivo in request.FILES.getlist('archivos'):
+                Archivo.objects.create(archivo=archivo, tarea=tarea)
+
+            return redirect('lista_tareas')
+        else:
+            print(form.errors)
+            return redirect('lista_tareas')
+    else:
+        form = TareaForm()
+
+    return render(request, 'tareas/crear_tarea.html', {'form': form})
+
+
+
+def lista_tareas(request):
+    profesor = Funcionario.objects.get(persona=request.user.persona)
+    tareas = Tarea.objects.filter(funcionario=profesor)
+
+    return render(request,'tareas/lista_tareas.html',{ 'tareas': tareas })
+
+
+def ver_entrega_tarea(request, id_tarea):
+    tarea=Tarea.objects.get(id_tarea=id_tarea)
+    entregas=EntregaTarea.objects.filter(tarea=tarea)
+
+    alumnos=Alumno.objects.filter(matricula__curso=tarea.curso)
+    alumnos_entregaron=entregas.values_list('alumno',flat=True)
+    return render(request,'tareas/ver_entregas_tarea.html',{
+        'tarea':tarea,
+        'entregas':entregas,
+        'alumnos': alumnos,
+        'alumnos_que_entregaron': alumnos_entregaron
+    })
+## --TAREA VISTA ALUMNO-- ##
+
+def ver_tareas_alumno(request):
+    alumno=Alumno.objects.get(persona=request.user.persona)
+    matricula=Matricula.objects.get(alumno=alumno)
+    tareas=Tarea.objects.filter(curso=matricula.curso, fecha_fin__gte=timezone.now())
+    return render(request,'tareas/tareas_alumno.html',{'tareas':tareas})
+
+
+def entregar_tarea(request,id_tarea):
+    tarea=Tarea.objects.get(id_tarea=id_tarea)
+    alumno=Alumno.objects.get(persona=request.user.persona)
+
+    if timezone.now()>tarea.fecha_fin:
+        return redirect('tareas_alumno')
+
+    if request.method=='POST':
+        form = EntregaTareaForm(request.POST,request.FILES)
+        if form.is_valid():
+            entrega=form.save(commit=False)
+            entrega.tarea=tarea
+            entrega.alumno=alumno
+            entrega.save()
+        #guardar más de un archivo
+            for archivo in request.FILES.getlist('archivos'):
+                ArchivoEntrega.objects.create(archivo=archivo, entrega=entrega)
+            
+            return redirect('tareas_alumno')
+    else:
+        form=EntregaTareaForm()
+    return render(request,'tareas/entregar_tarea.html',{'form':form, 'tarea':tarea})
+
+
     

@@ -32,15 +32,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for funcionario in funcionarios %}
+                            {% for usuario in usuarios %}
                             <tr class="table-light table-striped">
-                                <td>{{ funcionario }}</td>
-                                <td>{{ funcionario.persona.rut }}</td>
+                                <td>{{ usuario.persona }}</td>
+                                <td>{{ usuario.persona.rut }}</td>
                                 <td>
-                                    <a href="#!" type="button" class="btn btn-secondary">Editar usuario</a>
+                                    <a href="" type="button" class="btn btn-secondary">Editar usuario</a>
                                 </td>
                                 <td>
-                                    <a href="#!" type="button" class="btn btn-danger">Eliminar usuario</a>
+                                    <a href="{% url 'eliminar-usuario' usuario.id %}" type="button" class="btn btn-danger">Eliminar usuario</a>
                                 </td>
                             </tr>
                             {% endfor %}

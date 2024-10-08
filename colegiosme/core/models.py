@@ -23,7 +23,7 @@ class Persona(models.Model):
     id_persona = models.AutoField(primary_key=True)
     rut = models.BigIntegerField()
     p_nombre = models.CharField(max_length=40)
-    s_nombre = models.CharField(max_length=40)
+    s_nombre = models.CharField(max_length=40, blank=True)
     ap_paterno = models.CharField(max_length=40)
     ap_materno = models.CharField(max_length=40)
     email = models.CharField(max_length=45)
@@ -34,10 +34,6 @@ class Persona(models.Model):
         return f'{self.p_nombre} {self.s_nombre} {self.ap_paterno} {self.ap_materno}'
 
 ## -- USUARIOS -- ##
-class EstadoUsuario(models.Model):
-    id_estado_usuario = models.AutoField(primary_key=True)
-    nombre_estado_usuario = models.CharField(max_length=40)
-
 class TipoUsuario(models.Model):
     id_tipo_usuario = models.AutoField(primary_key=True)
     nombre_tipo_usuario = models.CharField(max_length=40)
@@ -46,7 +42,6 @@ class Usuario(AbstractUser):
     first_name = None
     last_name = None
 
-    estado_usuario = models.ForeignKey('EstadoUsuario', on_delete=models.PROTECT, db_column='id_estado_usuario')
     tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.PROTECT, db_column='id_tipo_usuario')
     persona = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_persona')
 
@@ -275,3 +270,41 @@ class Notas(models.Model):
     nota = models.FloatField()
     matricula = models.ForeignKey('Matricula', on_delete=models.PROTECT, db_column='id_matricula')
     lista_asignatura = models.ForeignKey('ListaAsignatura', on_delete=models.PROTECT, db_column='id_lista_asignatura')
+
+## --TAREA-- ##
+class Tarea(models.Model):
+    id_tarea = models.AutoField(primary_key=True)
+    titulo = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    fecha_fin = models.DateTimeField()
+    curso = models.ForeignKey('Curso', on_delete=models.PROTECT)
+    asignatura = models.ForeignKey('Asignatura',on_delete=models.PROTECT, db_column='id_asignatura')
+    funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='profesor')
+    archivos = models.ManyToManyField('Archivo', blank=True, db_column='archivos', related_name='archivos_tareas')
+
+    def __str__(self):
+        return f'Tarea:{self.titulo} para la asignatura {self.asignatura}'
+
+class Archivo(models.Model):
+    archivo = models.FileField(upload_to='media/archivos_tareas/')
+    tarea = models.ForeignKey('Tarea', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.archivo.name
+## --ENTREGA TAREA-- ##
+class EntregaTarea(models.Model):
+    tarea=models.ForeignKey('Tarea', on_delete=models.CASCADE)
+    alumno=models.ForeignKey('Alumno',on_delete=models.PROTECT)
+    comentario=models.TextField(blank=True)
+    archivos=models.ManyToManyField('ArchivoEntrega',blank=True)
+    fecha_entrega= models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'Entrega de {self.alumno} para {self.tarea}'
+    
+class ArchivoEntrega(models.Model):
+    archivo=models.FileField(upload_to='media/archivos_entrega/')
+    entrega= models.ForeignKey('EntregaTarea', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.archivo.name

@@ -951,8 +951,6 @@ def obtener_persona(request, rut):
         return Response({ 'ok': False, 'msg': e })
 
 ## --TAREA VISTA PROFESOR-- ##
-
-
 def crear_tarea(request):
     profesor = Funcionario.objects.get(persona=request.user.persona)
 
@@ -985,14 +983,11 @@ def crear_tarea(request):
 
     return render(request, 'tareas/crear_tarea.html', {'form': form})
 
-
-
 def lista_tareas(request):
     profesor = Funcionario.objects.get(persona=request.user.persona)
     tareas = Tarea.objects.filter(funcionario=profesor)
 
     return render(request,'tareas/lista_tareas.html',{ 'tareas': tareas })
-
 
 def ver_entrega_tarea(request, id_tarea):
     tarea=Tarea.objects.get(id_tarea=id_tarea)
@@ -1007,6 +1002,7 @@ def ver_entrega_tarea(request, id_tarea):
         'alumnos_que_entregaron': alumnos_entregaron,
 
     })
+
 def eliminar_tarea(request, id_tarea):
     tarea = Tarea.objects.get(id_tarea=id_tarea)
     tarea.delete()
@@ -1015,13 +1011,14 @@ def eliminar_tarea(request, id_tarea):
     return redirect(to="lista_tareas")
 
 ## --TAREA VISTA ALUMNO-- ##
-
 def ver_tareas_alumno(request):
-    alumno=Alumno.objects.get(persona=request.user.persona)
-    matricula=Matricula.objects.get(alumno=alumno)
-    tareas=Tarea.objects.filter(curso=matricula.curso, fecha_fin__gte=timezone.now())
-    return render(request,'tareas/tareas_alumno.html',{'tareas':tareas})
+    alumno = Alumno.objects.get(persona=request.user.persona)
+    matricula = Matricula.objects.get(alumno=alumno)
+    tareas = Tarea.objects.filter(curso=matricula.curso)
 
+    print(tareas)
+
+    return render(request,'tareas/tareas_alumno.html', { 'tareas': tareas })
 
 def entregar_tarea(request, id_tarea):
     tarea = Tarea.objects.get(id_tarea=id_tarea)
@@ -1044,6 +1041,15 @@ def entregar_tarea(request, id_tarea):
                 entrega.archivos.add(nuevo_archivo)  # Asociar archivo con la entrega
 
             messages.success(request, 'Entrega de tarea satifactoriamente')
+
+            email_alumno = alumno.persona.email
+            email_profesor = tarea.funcionario.persona.email
+            emails = [email_alumno, email_profesor]
+
+            asunto = f"Entrega {alumno.persona} tarea: {tarea.titulo}"
+            mensaje = f"Hola,\n se informa que se acaba de subir una entrega para la asignatura {tarea.asignatura} ,\n {tarea.descripcion},\n hora de entrega {date.today()}."
+            enviar_correo(emails, asunto,mensaje)
+
             return redirect('tareas_alumno')
     else:
         form = EntregaTareaForm()
@@ -1055,8 +1061,19 @@ def obtener_asignaturas(request, curso):
     asignaturas_data = [{"id": asignatura.id_asignatura, "nombre": asignatura.lista_asignatura.nombre_asignatura} for asignatura in asignaturas]
     return JsonResponse(list(asignaturas_data), safe=False)
 
-## --EMAIL-- ##
+def ver_mis_entregas(request, id_tarea):
+    alumno = Alumno.objects.get(persona=request.user.persona)
+    entregas = EntregaTarea.objects.filter(tarea=id_tarea, alumno=alumno)
+    tarea = Tarea.objects.get(pk=id_tarea)
 
+    data = {
+        'entregas': entregas,
+        'tarea': tarea
+    }
+
+    return render(request, 'tareas/ver_mis_tareas.html', data)
+
+## --EMAIL-- ##
 def enviar_correo( email,asunto,mensaje):
     print(asunto)
     print(mensaje)

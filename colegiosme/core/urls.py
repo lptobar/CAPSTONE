@@ -84,7 +84,8 @@ urlpatterns = [
      ## -- TAREA VISTA ALUMNO -- ##
     path('tareas/alumno/', ver_tareas_alumno, name='tareas_alumno'),
     path('tareas/entregar/<int:id_tarea>', entregar_tarea , name='entregar_tarea'),
-    path('obtener_asignaturas/<curso>/', obtener_asignaturas, name='obtener_asignaturas')
+    path('obtener_asignaturas/<curso>/', obtener_asignaturas, name='obtener_asignaturas'),
+    path('tareas/entregas/<id_tarea>/', ver_mis_entregas, name='ver_mis_entregas'),
   
 ]
 if settings.DEBUG:

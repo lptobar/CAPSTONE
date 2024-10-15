@@ -11,6 +11,7 @@
                 <th>Asignatura</th>
                 <th>Fecha Límite</th>
                 <th>Acciones</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +23,9 @@
                 <td>{{ tarea.fecha_fin }}</td>
                 <td>
                     <a href="{% url 'entregar_tarea' tarea.id_tarea %}" class="btn btn-success btn-sm">Entregar Tarea</a>
+                </td>
+                <td>
+                    <a href="{% url 'ver_mis_entregas' tarea.id_tarea %}" class="btn btn-danger btn-sm">Ver entregas</a>
                 </td>
             </tr>
             {% empty %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 3 %}
 <div class="container mt-4">
     <h2 class="text-center mb-4">Crear Tarea</h2>
     
@@ -8,16 +9,22 @@
         <div class="col-md-8">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_curso">Curso</label>
-                    {{ form.curso }}
-                </div>
 
                 <div class="form-group">
-                    <label for="id_asignatura">Asignatura</label>
-                    {{ form.asignatura }}
+                <label for="id_curso">Curso:</label>
+                {{ form.curso }}  
                 </div>
-
+                <div class="form-group">
+                    <label for="id_asignatura">Asignatura:</label>
+                    <select id="id_asignatura" name="asignatura" class="form-control">
+                        <option value="">Seleccione una asignatura</option>
+                       
+                        {% for asignatura in asignaturas %}
+                            <option value="{{ asignatura.id }}">{{ asignatura.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+               
                 <div class="form-group">
                     <label for="id_titulo">Título</label>
                     {{ form.titulo }}
@@ -40,11 +47,23 @@
                 </div>
 
                 <br>
+                <a href="{% url 'lista_tareas' %}" class="btn btn-secondary">Volver</a>
                 <button type="submit" class="btn btn-success btn-block">Crear Tarea</button>
+                
             </form>
         </div>
     </div>
 </div>
+{% else %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i
+                    class="bi bi-exclamation-diamond-fill"></i></h1>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% block script %}
 <!-- Flatpickr CSS & JS -->
@@ -71,6 +90,39 @@
                 // Convertir la fecha seleccionada a la hora de Chile
                 const selectedDateInChile = DateTime.fromJSDate(selectedDates[0]).setZone(chileZone).toISO();
                 console.log("Fecha seleccionada en Chile: ", selectedDateInChile);
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const cursoSelect = document.getElementById('id_curso');
+        const asignaturaSelect = document.getElementById('id_asignatura');
+
+        // Escuchar cuando el curso cambia
+        cursoSelect.addEventListener('change', function () {
+            const cursoId = this.value;
+
+            // Verificar si se seleccionó un curso
+            console.log("El ID del curso seleccionado es:", cursoId);
+            if (cursoId) {
+                // Hacer una solicitud para obtener las asignaturas del curso seleccionado
+                fetch(`/obtener_asignaturas/${cursoId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Limpiar las opciones actuales
+                        asignaturaSelect.innerHTML = '<option value="">Seleccione una asignatura</option>';
+                        
+                        // Agregar las nuevas asignaturas obtenidas
+                        data.forEach(asignatura => {
+                            const option = document.createElement('option');
+                            option.value = asignatura.id;
+                            option.textContent = asignatura.nombre;
+                            asignaturaSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                // Si no hay curso seleccionado, limpiar las asignaturas
+                asignaturaSelect.innerHTML = '<option value="">Seleccione una asignatura</option>';
             }
         });
     });

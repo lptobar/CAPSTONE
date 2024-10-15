@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Detalle de la Tarea{% endblock %}
-
 {% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 3 %}
 <div class="container">
     <div class="card mb-4">
         <div class="card-header bg-primary text-black">
@@ -72,16 +71,41 @@
         </tbody>
     </table>
     <h3 class="mt-4">Alumnos que NO han entregado la tarea</h3>
-    <ul class="list-group mb-4">
+    <table class="table table-bordered mt-4">
+        <thead class="table">
+            <tr>
+                <th>Estudiante</th>
+                <th>Mensaje</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for alumno in alumnos %}
+        
             {% if alumno.id_alumno not in alumnos_que_entregaron %}
-                <li class="list-group-item">{{ alumno.persona }} - No ha entregado la tarea.</li>
-            {% endif %}
-        {% empty %}
-            <li class="list-group-item">Todos los alumnos han entregado la tarea.</li>
+                <tr>
+                    <td>{{ alumno.persona }}</td>
+                    <td>No ha entregado la tarea.</td>
+                </tr>
+                {% endif %}
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Todos los alumnos han entregado la tarea.</td>
+                </tr>
+                
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 
  
 </div>
+{% else %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i
+                    class="bi bi-exclamation-diamond-fill"></i></h1>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

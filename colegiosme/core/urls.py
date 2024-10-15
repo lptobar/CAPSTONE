@@ -79,9 +79,13 @@ urlpatterns = [
     path('tareas/crear/', crear_tarea, name='crear_tarea'),
     path('tareas/', lista_tareas, name='lista_tareas'),
     path('tareas/entregas/<int:id_tarea>', ver_entrega_tarea, name='ver_entrega_tarea'),
+    path('eliminar_tarea/<int:id_tarea>/', eliminar_tarea, name='eliminar_tarea'),
+ 
      ## -- TAREA VISTA ALUMNO -- ##
     path('tareas/alumno/', ver_tareas_alumno, name='tareas_alumno'),
-    path('tareas/entregar/<int:id_tarea>', entregar_tarea , name='entregar_tarea')
+    path('tareas/entregar/<int:id_tarea>', entregar_tarea , name='entregar_tarea'),
+    path('obtener_asignaturas/<curso>/', obtener_asignaturas, name='obtener_asignaturas')
+  
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

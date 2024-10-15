@@ -27,8 +27,7 @@ SECRET_KEY = 'django-insecure-u6uld!2rn_njdp74fh64k!n!m8j4v4etumf^pkrxtl0k7$)_w)
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.0.21',
-    '190.100.203.211'
+  
 ]
 
 
@@ -87,7 +86,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'root'
+        'PASSWORD': 'adminroot'
     }
 }
 
@@ -144,3 +143,11 @@ CRISPY_TEMPLATE_PACK= 'bootstrap5'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'colegiosme.comunicaciones@gmail.com'
+EMAIL_HOST_PASSWORD = 'znbx wxqn vewg zmpr'
+DEFAULT_FROM_EMAIL = 'colegiosme.comunicaciones@gmail.com'

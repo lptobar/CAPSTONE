@@ -14,6 +14,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from transbank.webpay.webpay_plus.transaction import Transaction
 from .carro import Carro
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
 
 import random
 
@@ -27,9 +30,9 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    #persona = Persona(pk=4)
-    #tipo = TipoUsuario(pk=1)
-    #Usuario.objects.create_user(username='juan', password='1234', persona=persona, tipo_usuario=tipo)
+    #persona = Persona(pk=5)
+    #tipo = TipoUsuario(pk=3)
+    #Usuario.objects.create_user(username='sergio', password='1234', persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -949,6 +952,7 @@ def obtener_persona(request, rut):
 
 ## --TAREA VISTA PROFESOR-- ##
 
+
 def crear_tarea(request):
     profesor = Funcionario.objects.get(persona=request.user.persona)
 
@@ -959,20 +963,27 @@ def crear_tarea(request):
             tarea.funcionario = profesor
             tarea.save()
             
-            # Guardar más de un archivo y asociarlo correctamente con la tarea
+            # Manejo de archivos
             for archivo in request.FILES.getlist('archivos'):
                 nuevo_archivo = Archivo.objects.create(archivo=archivo)
-                tarea.archivos.add(nuevo_archivo)  # Asociar archivo con la tarea
+                tarea.archivos.add(nuevo_archivo) 
 
+            messages.success(request, 'Tarea creada satifactoriamente')
+            print(tarea.curso.id_curso)
+            emails_alumnos, emails_apoderados = obtener_emails_curso(id_curso=tarea.curso.id_curso)
+            asunto=f"Nueva Tarea {tarea.titulo}"
+            mensaje=f"Hola,\n se informa que se acaba de subir una nueva tarea para la asignatura {tarea.asignatura} ,\n {tarea.descripcion},\n tiene plazo hasta {tarea.fecha_fin} para entregar la Tarea."
+            enviar_correo(emails_alumnos,asunto,mensaje)
+            enviar_correo(emails_apoderados,asunto,mensaje)
             return redirect('lista_tareas')
         else:
+            messages.error(request, 'Tarea Error al intentar crear la tarea')
             print(form.errors)
             return redirect('lista_tareas')
     else:
         form = TareaForm()
 
     return render(request, 'tareas/crear_tarea.html', {'form': form})
-
 
 
 
@@ -996,6 +1007,13 @@ def ver_entrega_tarea(request, id_tarea):
         'alumnos_que_entregaron': alumnos_entregaron,
 
     })
+def eliminar_tarea(request, id_tarea):
+    tarea = Tarea.objects.get(id_tarea=id_tarea)
+    tarea.delete()
+    messages.success(request, 'Tarea eliminada satifactoriamente')
+    
+    return redirect(to="lista_tareas")
+
 ## --TAREA VISTA ALUMNO-- ##
 
 def ver_tareas_alumno(request):
@@ -1025,7 +1043,62 @@ def entregar_tarea(request, id_tarea):
                 nuevo_archivo = ArchivoEntrega.objects.create(archivo=archivo)
                 entrega.archivos.add(nuevo_archivo)  # Asociar archivo con la entrega
 
+            messages.success(request, 'Entrega de tarea satifactoriamente')
             return redirect('tareas_alumno')
     else:
         form = EntregaTareaForm()
     return render(request, 'tareas/entregar_tarea.html', {'form': form, 'tarea': tarea})
+
+def obtener_asignaturas(request, curso):
+    profesor = Funcionario.objects.get(persona=request.user.persona)
+    asignaturas= Asignatura.objects.filter(curso=curso, funcionario=profesor.id_funcionario)
+    asignaturas_data = [{"id": asignatura.id_asignatura, "nombre": asignatura.lista_asignatura.nombre_asignatura} for asignatura in asignaturas]
+    return JsonResponse(list(asignaturas_data), safe=False)
+
+## --EMAIL-- ##
+
+def enviar_correo( email,asunto,mensaje):
+    print(asunto)
+    print(mensaje)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = email
+    data={
+        'asunto' :asunto,
+        'mensaje' :mensaje
+    }
+    print(data)
+    # Renderizar la plantilla con contexto
+    html_content = render_to_string('email/email.html',data)
+
+    # Crear el email con el contenido HTML
+    email_message = EmailMultiAlternatives(asunto, '', from_email, recipient_list)
+    email_message.attach_alternative(html_content, "text/html")
+    print("Contenido HTML generado:", html_content)
+    email_message.send()
+
+def obtener_emails_curso(id_curso):
+    # Obtener el curso
+    curso = Curso.objects.get(id_curso=id_curso)
+    
+    # Obtener todas las matrículas del curso
+    matriculas = Matricula.objects.filter(curso=curso)
+    
+    # Listas para almacenar correos electrónicos
+    emails_alumnos = []
+    emails_apoderados = []
+
+    for matricula in matriculas:
+        # Obtener el alumno
+        alumno = matricula.alumno
+        # Obtener el email del alumno
+        emails_alumnos.append(alumno.persona.email)
+        
+        # Obtener el apoderado del alumno desde el GrupoFamiliar
+        grupo_familiar = GrupoFamiliar.objects.filter(alumno=alumno)
+        
+        # Obtener los emails de los apoderados relacionados
+        for relacion in grupo_familiar:
+            apoderado = relacion.apoderado
+            emails_apoderados.append(apoderado.persona.email)
+
+    return emails_alumnos, emails_apoderados

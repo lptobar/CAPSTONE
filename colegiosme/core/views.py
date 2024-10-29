@@ -17,6 +17,7 @@ from .carro import Carro
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.db import IntegrityError
 
 import random
 
@@ -1061,6 +1062,11 @@ def obtener_asignaturas(request, curso):
     asignaturas_data = [{"id": asignatura.id_asignatura, "nombre": asignatura.lista_asignatura.nombre_asignatura} for asignatura in asignaturas]
     return JsonResponse(list(asignaturas_data), safe=False)
 
+def obtener_asignaturas2(request, curso):
+    asignaturas= Asignatura.objects.filter(curso=curso)
+    asignaturas_data = [{"id": asignatura.id_asignatura, "nombre": asignatura.lista_asignatura.nombre_asignatura} for asignatura in asignaturas]
+    return JsonResponse(list(asignaturas_data), safe=False)
+
 def ver_mis_entregas(request, id_tarea):
     alumno = Alumno.objects.get(persona=request.user.persona)
     entregas = EntregaTarea.objects.filter(tarea=id_tarea, alumno=alumno)
@@ -1119,3 +1125,98 @@ def obtener_emails_curso(id_curso):
             emails_apoderados.append(apoderado.persona.email)
 
     return emails_alumnos, emails_apoderados
+
+## --HORARIO-- ##
+def listar_horarios(request):
+    cursos = Curso.objects.all()
+    return render(request, 'horario/listar_curso_horario.html', {'cursos': cursos})
+
+def horario(request, id_curso):
+    curso = Curso.objects.get(id_curso=id_curso)
+    asignaturas = Asignatura.objects.filter(curso=curso)
+    bloques = BloqueHorario.objects.all()  # Obtén todos los bloques horarios disponibles
+    dias_semana = DiaSemana.objects.all()
+    horarios_existentes = Horario.objects.filter(curso=curso)
+    context = {
+        'curso': curso,
+        'asignaturas': asignaturas,
+        'bloques': bloques,
+        'dias_semana': dias_semana,
+        'horario_existente':horarios_existentes,
+    }
+    
+    return render(request, 'horario/crear_horario.html', context)
+
+def asignar_asignatura(request):
+    data = request.POST
+    curso_id = data.get('curso_id')
+    asignatura_id = data.get('asignatura_id')
+    dia_id = data.get('dia_id')
+    bloque_id = data.get('bloque_id')
+    profesor_id = data.get('profesor_id')  # Obtén el ID del profesor responsable
+
+    # Verificar si ya existe un horario para esta asignatura en este bloque y día para el mismo curso
+    horario_existente = Horario.objects.filter(
+        curso=curso_id,
+        dia_semana=dia_id,
+        bloque_horario=bloque_id
+    ).first() 
+     # Obtiene el primer registro si existe
+    horario_utilizado=Horario.objects.filter(
+        dia_semana=dia_id,
+        bloque_horario=bloque_id,
+        profesor=profesor_id
+    ).first()
+    try:
+       
+        if horario_existente:
+            # Si existe, eliminar el registro anterior
+            horario_existente.delete()  # Elimina el horario existente
+        elif horario_utilizado:
+            return JsonResponse({'status': 'error', 'message':'El profesor ya se encuentra asignado \n en este mismo horario y dia en otro curso'})
+        # Crear un nuevo registro de horario
+        horario = Horario.objects.create(
+            curso_id=curso_id,
+            asignatura_id=asignatura_id,
+            dia_semana_id=dia_id,
+            bloque_horario_id=bloque_id,
+            profesor_id=profesor_id
+        )
+        return JsonResponse({'status': 'success', 'message': 'Asignatura asignada correctamente.'})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+## --Bloque Horario-- ##
+def crear_bloque_horario(request):
+    if request.method == 'POST':
+        form = BloqueHorarioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_bloques_horarios')  # Define esta URL para listar los bloques
+    else:
+        form = BloqueHorarioForm()
+    return render(request, 'bloque_horario/crear_bloque_horario.html', {'form': form})
+
+def listar_bloques_horarios(request):
+    bloques = BloqueHorario.objects.all()
+    return render(request, 'bloque_horario/listar_bloques_horarios.html', {'bloques': bloques})
+
+def actualizar_bloque_horario(request, bloque_id):
+    bloque = BloqueHorario.objects.get(pk=bloque_id)
+    if request.method == 'POST':
+        form = BloqueHorarioForm(request.POST, instance=bloque)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_bloques_horarios')
+    else:
+        form = BloqueHorarioForm(instance=bloque)
+    return render(request, 'bloque_horario/actualizar_bloque_horario.html', {'form': form})
+
+def eliminar_bloque_horario(request, bloque_id):
+    bloque = BloqueHorario.objects.get(pk=bloque_id)
+    bloque.delete()
+    return redirect('listar_bloques_horarios')
+    
+

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Actualizar Bloque Horario</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3 row">
+                            <label for="{{ form.nombre_bloque.id_for_label }}" class="col-sm-3 col-form-label">{{ form.nombre_bloque.label }}</label>
+                            <div class="col-sm-9">
+                                {{ form.nombre_bloque }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label for="{{ form.hora_inicio.id_for_label }}" class="col-sm-3 col-form-label">{{ form.hora_inicio.label }}</label>
+                            <div class="col-sm-9">
+                                {{ form.hora_inicio }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label for="{{ form.hora_fin.id_for_label }}" class="col-sm-3 col-form-label">{{ form.hora_fin.label }}</label>
+                            <div class="col-sm-9">
+                                {{ form.hora_fin }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'listar_bloques_horarios' %}" class="btn btn-secondary">Volver</a>
+                            <button type="submit" class="btn btn-primary">Actualizar Bloque Horario</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- Incluye el script de Flatpickr para los campos de hora -->
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Inicializa Flatpickr en los campos de hora
+    flatpickr("input[name='hora_inicio']", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true
+    });
+
+    flatpickr("input[name='hora_fin']", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true
+    });
+</script>
+{% endblock %}

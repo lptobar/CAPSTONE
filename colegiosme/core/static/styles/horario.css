@@ -1,0 +1,11 @@
+@charset "UTF-8";
+.asignatura-item { cursor: grab; }
+.horario-cell { border: 1px solid #ddd; min-height: 80px; position: relative; }
+.bloque-horario { font-size: 0.9em; font-weight: bold; text-align: center; }
+.container { max-width: 1200px; }
+.asignatura-item { background-color: #007bff;color: white;padding: 10px;margin-bottom: 10px;border-radius: 5px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);cursor: pointer;transition: transform 0.2s, box-shadow 0.2s;align-items: center;}
+.asignatura-item:hover {transform: scale(1.05);box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);background-color: #012f60;}
+.horario-table { background-color: #f9f9f9; border-radius: 8px; overflow: hidden; }
+.table-header { background-color: #007bff; color: white; font-weight: bold; text-align: center; }
+.horario-cell { transition: background-color 0.2s ease; }
+.horario-cell:hover { background-color: #f1f1f1; }

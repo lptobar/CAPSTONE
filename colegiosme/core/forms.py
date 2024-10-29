@@ -86,3 +86,13 @@ class EntregaTareaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Agregar clases CSS a los campos del formulario
         self.fields['comentario'].widget.attrs.update({'class': 'form-control'})
+
+class HorarioForm(forms.ModelForm):
+    class Meta:
+        model = Horario
+        fields = ['curso', 'asignatura', 'profesor', 'dia_semana', 'bloque_horario']
+
+class BloqueHorarioForm(forms.ModelForm):
+    class Meta:
+        model = BloqueHorario
+        fields = ['nombre_bloque', 'hora_inicio', 'hora_fin']

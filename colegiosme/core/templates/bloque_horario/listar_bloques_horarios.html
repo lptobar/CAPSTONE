@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between">
+        <h2 class="text-center mb-4">Listado de Bloques Horarios</h2>
+        <a href="{% url 'listar_horarios' %}" class="btn btn-primary">Volver</a>
+    </div>
+    <div class="mb-3 text-right">
+        <a href="{% url 'crear_bloque_horario' %}" class="btn btn-primary">Crear Nuevo Bloque Horario</a>
+    </div>
+    
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bloque in bloques %}
+                <tr>
+                    <td>{{ bloque.nombre_bloque }}</td>
+                    <td>{{ bloque.hora_inicio }}</td>
+                    <td>{{ bloque.hora_fin }}</td>
+                    <td>
+                        <a href="{% url 'actualizar_bloque_horario' bloque.id_bloque %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'eliminar_bloque_horario' bloque.id_bloque %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No hay bloques horarios creados.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

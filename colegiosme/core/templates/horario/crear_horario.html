@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+    {% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'styles/horario.css' %}">
+  
+    {% endblock %}
+
+{% block content %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 5 %}
+    <div class="container mt-4">
+
+        <div class="d-flex justify-content-between">
+            <h2>Horario de {{ curso }}</h2>
+            <a href="{% url 'listar_horarios' %}" class="btn btn-primary">Volver</a>
+        </div>
+        
+
+        <div class="row">
+            <!-- Lista de asignaturas -->
+            <div class="col-md-3">
+                <h4>Asignaturas</h4>
+                <div id="asignaturas" data-curso-id="{{ curso.id }}">
+                    {% for asignatura in asignaturas %}
+                        <div class="asignatura-item bg-primary text-white" draggable="true" data-id="{{ asignatura.id_asignatura }}" data-profesor-id="{{ asignatura.funcionario.id_funcionario }}">
+                            {{ asignatura }}<br>
+                            <small>{{ asignatura.funcionario }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tabla de horario -->
+            <div class="col-md-9">
+                <h4>Horario</h4>
+                <div class="horario-table p-3">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="table-header">Hora/Día</th>
+                                {% for dia in dias_semana %}
+                                    <th class="table-header">{{ dia }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bloque in bloques %}
+                                <tr>
+                                    <td class="bloque-horario">
+                                        {{ bloque.hora_inicio|date:"H:i" }} - {{ bloque.hora_fin|date:"H:i" }}
+                                    </td>
+                                    {% for dia in dias_semana %}
+                                        <td class="horario-cell" data-dia="{{ dia.id_dia }}" data-bloque="{{ bloque.id_bloque }}">
+                                            {% for horario in horario_existente %}
+                                            
+                                                {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
+                                                    {{ horario.asignatura }}<br>
+                                                    <small>{{ horario.profesor }}</small>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Error -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="errorModalLabel">Error al guardar la asignatura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">Ocurrió un error al intentar guardar la asignatura. Por favor, inténtalo de nuevo.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <div class="container d-flex align-items-center justify-content-center">
+            <div class="card card-listar">
+                <div class="card-title">
+                    <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% endblock %}
+    {% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Función para mostrar el modal de error con un mensaje personalizado
+        function showErrorModal(message) {
+            document.getElementById('errorMessage').textContent = message;
+            let errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+
+        // Manejo de Drag-and-Drop
+        document.querySelectorAll('.asignatura-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                const asignaturaId = e.target.dataset.id;
+                const profesorId = e.target.dataset.profesorId;
+                e.dataTransfer.setData('text/plain', JSON.stringify({ asignaturaId, profesorId }));
+            });
+        });
+
+        document.querySelectorAll('.horario-cell').forEach(cell => {
+            cell.addEventListener('dragover', e => e.preventDefault());
+
+            cell.addEventListener('drop', e => {
+                e.preventDefault();
+
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const asignaturaId = data.asignaturaId;
+                const profesorId = data.profesorId;
+                const asignatura = document.querySelector(`.asignatura-item[data-id="${asignaturaId}"]`);
+
+                const diaId = cell.dataset.dia;
+                const bloqueId = cell.dataset.bloque;
+
+                cell.innerHTML = asignatura ? asignatura.innerHTML : "";
+
+                fetch("{% url 'asignar_asignatura' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: new URLSearchParams({
+                        'curso_id': "{{ curso.id_curso }}",
+                        'asignatura_id': asignaturaId,
+                        'dia_id': diaId,
+                        'bloque_id': bloqueId,
+                        'profesor_id': profesorId,
+                        
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        showErrorModal("El profesor ya se encuentra asignado \n en este mismo horario y dia en otro curso" || "Error al guardar la asignatura.");
+                        console.log(data.message)
+                        cell.innerHTML = "";                       
+                        
+                    }else {
+                        cell.classList.add('bg-success');
+                        setTimeout(() => cell.classList.remove('bg-success'), 500);
+            }
+                })
+                .catch(error => {
+                    showErrorModal("Ocurrió un error en la solicitud: " + error.message);
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

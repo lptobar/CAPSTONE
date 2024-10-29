@@ -310,3 +310,34 @@ class ArchivoEntrega(models.Model):
     
     def __str__(self):
         return self.archivo.name
+    
+## --HORARIO-- ##
+class BloqueHorario(models.Model):
+    id_bloque = models.AutoField(primary_key=True)
+    nombre_bloque = models.CharField(max_length=40)  
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+
+    def __str__(self):
+        return f'{self.hora_inicio} - {self.hora_fin}'
+    
+class DiaSemana(models.Model):
+    id_dia= models.AutoField(primary_key=True)
+    nombre_dia = models.CharField(max_length=40)  
+
+    def __str__(self):
+        return f'{self.nombre_dia}'
+
+class Horario(models.Model):
+    id_horario = models.AutoField(primary_key=True)
+    curso = models.ForeignKey('Curso', on_delete=models.PROTECT, db_column='id_curso')
+    asignatura = models.ForeignKey('Asignatura', on_delete=models.PROTECT, db_column='id_asignatura')
+    profesor = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='id_funcionario')
+    dia_semana = models.ForeignKey(DiaSemana, on_delete=models.PROTECT, db_column='id_dia')
+    bloque_horario = models.ForeignKey('BloqueHorario', on_delete=models.CASCADE, db_column='id_bloque')
+
+    class Meta:
+        unique_together = ('profesor', 'dia_semana', 'bloque_horario')
+
+    def __str__(self):
+        return f'{self.curso} - {self.asignatura} - {self.dia_semana} - {self.bloque_horario}'

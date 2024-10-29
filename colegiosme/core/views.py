@@ -1081,22 +1081,17 @@ def ver_mis_entregas(request, id_tarea):
 
 ## --EMAIL-- ##
 def enviar_correo( email,asunto,mensaje):
-    print(asunto)
-    print(mensaje)
     from_email = settings.DEFAULT_FROM_EMAIL
     recipient_list = email
     data={
         'asunto' :asunto,
         'mensaje' :mensaje
     }
-    print(data)
     # Renderizar la plantilla con contexto
     html_content = render_to_string('email/email.html',data)
-
     # Crear el email con el contenido HTML
     email_message = EmailMultiAlternatives(asunto, '', from_email, recipient_list)
     email_message.attach_alternative(html_content, "text/html")
-    print("Contenido HTML generado:", html_content)
     email_message.send()
 
 def obtener_emails_curso(id_curso):
@@ -1134,7 +1129,7 @@ def listar_horarios(request):
 def horario(request, id_curso):
     curso = Curso.objects.get(id_curso=id_curso)
     asignaturas = Asignatura.objects.filter(curso=curso)
-    bloques = BloqueHorario.objects.all()  # Obtén todos los bloques horarios disponibles
+    bloques = BloqueHorario.objects.all()  
     dias_semana = DiaSemana.objects.all()
     horarios_existentes = Horario.objects.filter(curso=curso)
     context = {
@@ -1146,6 +1141,42 @@ def horario(request, id_curso):
     }
     
     return render(request, 'horario/crear_horario.html', context)
+
+def horario_alumno(request):
+    alumno = Alumno.objects.get(persona=request.user.persona)
+    matricula = Matricula.objects.get(alumno=alumno)
+    asignaturas = Asignatura.objects.filter(curso=matricula.curso)
+    bloques = BloqueHorario.objects.all()  
+    dias_semana = DiaSemana.objects.all()
+    horarios_existentes = Horario.objects.filter(curso=matricula.curso)
+    context = {
+        'curso': matricula.curso,
+        'asignaturas': asignaturas,
+        'bloques': bloques,
+        'dias_semana': dias_semana,
+        'horario_existente':horarios_existentes,
+    }
+    
+    return render(request, 'horario/horario_alumno.html', context)
+
+def horario_profesor(request):
+    profesor = Funcionario.objects.get(persona=request.user.persona)
+    asignaturas = Asignatura.objects.filter(funcionario=profesor)
+    cursos=Curso.objects.filter(funcionario=profesor)
+    bloques = BloqueHorario.objects.all() 
+    dias_semana = DiaSemana.objects.all()
+    horarios_existentes = Horario.objects.filter(profesor=profesor)
+    context = {
+        'curso': cursos,
+        'asignaturas': asignaturas,
+        'bloques': bloques,
+        'dias_semana': dias_semana,
+        'horario_existente':horarios_existentes,
+        'tipo_usuario':request.user.tipo_usuario.id_tipo_usuario,
+        'profesor':profesor,
+    }
+    
+    return render(request, 'horario/horario_profesor.html', context)
 
 def asignar_asignatura(request):
     data = request.POST

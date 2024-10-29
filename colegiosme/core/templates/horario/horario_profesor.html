@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if request.user.tipo_usuario.id_tipo_usuario == 3 %}
+{% if tipo_usuario == 3 %}
 <!-- Tabla de horario -->
 <div class="col-md-9">
-    <h4>Horario</h4>
+    <h4>Horario {{ profesor }}</h4>
     <div class="horario-table p-3">
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th class="table-header">Hora/Día</th>
                     {% for dia in dias_semana %}
-                        <th class="table-header">{{ dia }}</th>
+                        <th class="table-header">{{ dia }}</th> 
                     {% endfor %}
                 </tr>
             </thead>
@@ -24,10 +24,9 @@
                         {% for dia in dias_semana %}
                             <td class="horario-cell" data-dia="{{ dia.id_dia }}" data-bloque="{{ bloque.id_bloque }}">
                                 {% for horario in horario_existente %}
-                                
                                     {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
-                                        {{ horario.asignatura }}<br>
-                                        <small>{{ horario.profesor }}</small>
+                                    {{ horario.asignatura }}<br>
+                                    <small>{{ horario.curso }}</small>
                                     {% endif %}
                                 {% endfor %}
                             </td>
@@ -37,8 +36,6 @@
             </tbody>
         </table>
     </div>
-</div>
-</div>
 </div>
 {% else %}
 <div class="container d-flex align-items-center justify-content-center">

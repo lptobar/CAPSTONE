@@ -91,7 +91,8 @@ urlpatterns = [
     path('crear_horario/<id_curso>', horario, name='horario'),
     path('asignar_asignatura/', asignar_asignatura, name='asignar_asignatura'),
     path('listar_horarios/', listar_horarios, name='listar_horarios'),
-  
+    path('horario_alumno/', horario_alumno, name='horario_alumno'),
+    path('horario_profesor/', horario_profesor, name='horario_profesor'),
 
     ## -- BLOQUE HORARIO -- ##
     path('bloques_horarios/', listar_bloques_horarios, name='listar_bloques_horarios'),

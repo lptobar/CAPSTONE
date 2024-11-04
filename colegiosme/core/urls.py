@@ -100,7 +100,8 @@ urlpatterns = [
     path('bloques_horarios/actualizar/<int:bloque_id>/', actualizar_bloque_horario, name='actualizar_bloque_horario'),
     path('bloques_horarios/eliminar/<int:bloque_id>/', eliminar_bloque_horario, name='eliminar_bloque_horario'),
 
-  
+    ## -- ENTREVISTAS -- ##
+    path('portal-reuniones/', portal_reuniones, name='portal-reuniones'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

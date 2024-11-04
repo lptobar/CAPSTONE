@@ -17,7 +17,8 @@ from .carro import Carro
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
-from django.db import IntegrityError
+from urllib.parse import urlparse, unquote
+from django.core import serializers
 
 import random
 
@@ -31,9 +32,9 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    #persona = Persona(pk=5)
-    #tipo = TipoUsuario(pk=3)
-    #Usuario.objects.create_user(username='sergio', password='1234', persona=persona, tipo_usuario=tipo)
+    # persona = Persona(pk=2)
+    # tipo = TipoUsuario(pk=5)
+    # Usuario.objects.create_user(username='le.plaza', password='1234', persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -103,30 +104,39 @@ def ver_anotaciones(request, id):
     return render(request, 'anotaciones/ver-anotaciones.html', data)
 
 def crear_anotacion(request, id):
-    url_anterior = request.META.get('HTTP_REFERER')
-    matricula = Matricula.objects.get(alumno__persona__rut=id, estado_matricula=1)
-    curso = Curso.objects.get(id_curso=matricula.curso.id_curso)
-    alumno = Alumno.objects.get(persona__rut=matricula.alumno.persona.rut)
-    persona = Persona.objects.get(rut=alumno.persona.rut)
+    if request.method == 'GET':
+        url_anterior = request.META.get('HTTP_REFERER')
+        matricula = Matricula.objects.get(alumno__persona__rut=id, estado_matricula=1)
+        curso = Curso.objects.get(id_curso=matricula.curso.id_curso)
+        alumno = Alumno.objects.get(persona=matricula.alumno.persona)
 
-    formulario = AnotacionForm()
+        path = urlparse(url_anterior).path
+        request.session['url_anterior'] = unquote(path.strip('/').split('/')[-1])
 
-    if request.method == 'POST':
-        formulario = AnotacionForm(request.POST)
-        if formulario.is_valid():
-            formulario.save()
-            pass
-        else:
-            pass
+        formulario = AnotacionForm()
 
-    data = {
+        data = {
         'fecha': date.today(),
         'curso': curso,
         'formulario': formulario,
-        'persona': persona
-    }
+        'persona': alumno.persona
+        }
 
-    return render(request, 'anotaciones/crear-anotaciones.html', data)
+        return render(request, 'anotaciones/crear-anotaciones.html', data)
+    elif request.method == 'POST':
+        formulario = AnotacionForm(request.POST)
+        if formulario.is_valid():
+            asignatura = Asignatura.objects.get(pk=request.session.get('url_anterior', None))
+            anotacion = formulario.save(commit=False)
+            anotacion.matricula = Matricula.objects.get(alumno__persona__rut=id)
+            anotacion.lista_asignatura = asignatura.lista_asignatura
+            anotacion.save()
+
+            messages.success(request, 'Anotación creada con exito')
+            return redirect('anotaciones-estudiantes', asignatura.id_asignatura)
+        else:
+            messages.error(request, 'Ha ocurrido un error al crear una anotación')
+            return redirect('crear-anotacion', alumno.persona.rut)
 
 ## -- NOTAS -- ##
 def portal_notas_profesor(request):
@@ -1249,5 +1259,29 @@ def eliminar_bloque_horario(request, bloque_id):
     bloque = BloqueHorario.objects.get(pk=bloque_id)
     bloque.delete()
     return redirect('listar_bloques_horarios')
-    
 
+def portal_reuniones(request):
+    reuniones = Reunion.objects.filter(Q(remitente=request.user.persona) | Q(destinatario=request.user.persona))
+    data = {
+        'reuniones': serializers.serialize('json', reuniones),
+        'formulario': ReunionForm()
+    }
+
+    if request.method == 'POST':
+        formulario = ReunionForm(data=request.POST)
+        if formulario.is_valid():
+            reunion = formulario.save(commit=False)
+            print(formulario.cleaned_data['destinatario'])
+
+            # reunion.destinatario = formulario.cleaned_data['destinatario']
+            reunion.remitente = request.user.persona
+            reunion.save()
+
+            messages.success(request, 'Reunion agendada correctamente.')
+            return redirect('portal-reuniones')
+        else:
+            messages.warning(request, 'Hubo un problema al agendar la hora.')
+            return redirect('portal-reuniones')
+        
+
+    return render(request, 'reuniones/portal-reuniones.html', data)

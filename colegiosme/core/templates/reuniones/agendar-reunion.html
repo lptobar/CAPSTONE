@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2 style="text-align: center;">Agendar una reunión</h2>
+    <form method="POST" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        {% csrf_token %}
+        {{ formulario }}
+        <button type="submit" class="btn btn-submit">Agendar</button>
+    </form>
+</div>
+{% endblock %}

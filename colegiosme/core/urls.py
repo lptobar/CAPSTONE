@@ -102,6 +102,8 @@ urlpatterns = [
 
     ## -- ENTREVISTAS -- ##
     path('portal-reuniones/', portal_reuniones, name='portal-reuniones'),
+    path('agendar-reunion/', agendar_reunion, name='agendar-reunion'),
+    path('obtener-reuniones/', obtener_reuniones)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

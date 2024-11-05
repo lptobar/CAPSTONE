@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<style>
+    :root {
+        --fc-border-color: black;
+        --fc-daygrid-event-dot-width: 5px;
+    }
+
+    .appointment-info {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        padding: 20px;
+        border: 1px solid black;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .appointment-info h2 {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2 style="text-align: center;">Agendamiento de reuniones</h2>
+    <a href="{% url 'agendar-reunion' %}" class="btn btn-primary">Agendar hora</a>
+    <div id="calendar"></div>
+
+    <div class="appointment-info" id="appointment-info">
+        <button class="close-btn" onclick="close_information()">X</button>
+        <h4 id="titulo"></h4>
+        <p id="cuerpo"></p>
+        <p id="fecha"></p>
+        <p id="destinatario"></p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            timeZone: '-4:00',
+            eventClick: (info) => {
+                const data = info.event.extendedProps.info;
+                const titulo = document.getElementById('titulo');
+                const cuerpo = document.getElementById('cuerpo');
+                const fecha = document.getElementById('fecha');
+                const destinatario = document.getElementById('destinatario');
+
+                titulo.innerText = data.titulo;
+                cuerpo.innerText = data.cuerpo;
+                fecha.innerText = data.fecha;
+                destinatario.innerText = `${data.destinatario.p_nombre} ${data.destinatario.s_nombre} ${data.destinatario.ap_paterno} ${data.destinatario.ap_materno}`;
+
+                open_information();
+            }
+        });
+        calendar.render();
+
+        calendar.batchRendering(() => {
+            fetch('/obtener-reuniones/').then(response => response.json())
+            .then(data => {
+                data.forEach(reunion => {
+                    calendar.addEvent({
+                        'title': reunion.titulo,
+                        'start': reunion.fecha,
+                        'backgroundColor': reunion.estado_reunion == 1 ? '#F02325' : '#6CE13E',
+                        'extendedProps': {
+                            info: reunion
+                        }
+                    });
+                });
+            });
+        });
+    });
+
+    function open_information() {
+        document.getElementById('appointment-info').style.display = 'block';
+        overlay.style.display = 'none';
+    }
+    function close_information() {
+        document.getElementById('appointment-info').style.display = 'none';
+        overlay.style.display = 'none';
+    }
+</script>
+{% endblock %}

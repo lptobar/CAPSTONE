@@ -18,7 +18,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from urllib.parse import urlparse, unquote
-from django.core import serializers
+from .serializers import *
 
 import random
 
@@ -955,8 +955,6 @@ def obtener_persona(request, rut):
         data['region'] = direccion.comuna.region.nombre_region
         data['comuna'] = direccion.comuna.id_comuna
 
-        print(data)
-
         return Response({ 'ok': True, 'data': data })
     except Exception as e:
         return Response({ 'ok': False, 'msg': e })
@@ -1253,17 +1251,20 @@ def actualizar_bloque_horario(request, bloque_id):
             return redirect('listar_bloques_horarios')
     else:
         form = BloqueHorarioForm(instance=bloque)
+
     return render(request, 'bloque_horario/actualizar_bloque_horario.html', {'form': form})
 
 def eliminar_bloque_horario(request, bloque_id):
     bloque = BloqueHorario.objects.get(pk=bloque_id)
     bloque.delete()
+
     return redirect('listar_bloques_horarios')
 
 def portal_reuniones(request):
-    reuniones = Reunion.objects.filter(Q(remitente=request.user.persona) | Q(destinatario=request.user.persona))
+    return render(request, 'reuniones/ver-reuniones.html')
+
+def agendar_reunion(request):
     data = {
-        'reuniones': serializers.serialize('json', reuniones),
         'formulario': ReunionForm()
     }
 
@@ -1271,17 +1272,19 @@ def portal_reuniones(request):
         formulario = ReunionForm(data=request.POST)
         if formulario.is_valid():
             reunion = formulario.save(commit=False)
-            print(formulario.cleaned_data['destinatario'])
-
-            # reunion.destinatario = formulario.cleaned_data['destinatario']
             reunion.remitente = request.user.persona
             reunion.save()
 
-            messages.success(request, 'Reunion agendada correctamente.')
             return redirect('portal-reuniones')
         else:
-            messages.warning(request, 'Hubo un problema al agendar la hora.')
-            return redirect('portal-reuniones')
-        
+            return redirect('agendar-reunion')
 
-    return render(request, 'reuniones/portal-reuniones.html', data)
+    return render(request, 'reuniones/agendar-reunion.html', data)
+
+@csrf_exempt
+@api_view(['GET'])
+def obtener_reuniones(request):
+    reuniones = Reunion.objects.filter(Q(remitente=request.user.persona) | Q(destinatario=request.user.persona))
+    serializer = ReunionSerializer(reuniones, many=True)
+
+    return Response(serializer.data)

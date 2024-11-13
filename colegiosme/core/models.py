@@ -348,6 +348,28 @@ class Horario(models.Model):
     def __str__(self):
         return f'{self.curso} - {self.asignatura} - {self.dia_semana} - {self.bloque_horario}'
 
+# --MENSAJERIA INTERNA-- #
+class Mensaje(models.Model):
+    id_mensaje=models.AutoField(primary_key=True)
+    remitente=models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="mensaje_remitente")
+    destinatario=models.ManyToManyField(Usuario,related_name="mensajes_destinatario")
+    asunto = models.CharField(max_length=100)
+    cuerpo = models.TextField()
+    fecha_envio = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f'{self.asunto} - {self.remitente}'
+
+class EstadoMensaje(models.Model):
+    id_estado_mensaje= models.AutoField(primary_key=True)
+    mensaje = models.ForeignKey(Mensaje, on_delete=models.CASCADE, related_name='estados')
+    destinatario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='mensajes_recibidos')
+    fecha_leido = models.DateTimeField(null=True, blank=True)
+    leido = models.BooleanField(default=False)
+    
+    
+    def __str__(self):
+
 ## -- REUNIONES -- ##
 class EstadoReunion(models.Model):
     id_estado_reunion = models.AutoField(primary_key=True)
@@ -361,3 +383,4 @@ class Reunion(models.Model):
     remitente = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_remitente', related_name='id_remitente')
     destinatario = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_destinatario')
     estado_reunion = models.ForeignKey('EstadoReunion', on_delete=models.PROTECT, db_column='id_estado_reunion', default='1')
+

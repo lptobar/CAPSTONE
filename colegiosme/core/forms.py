@@ -97,6 +97,17 @@ class BloqueHorarioForm(forms.ModelForm):
         model = BloqueHorario
         fields = ['nombre_bloque', 'hora_inicio', 'hora_fin']
 
+
+class MensajeForm(forms.ModelForm):
+    class Meta:
+        model = Mensaje
+        fields = ['destinatario', 'asunto', 'cuerpo']
+        widgets = {
+            'destinatario': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'asunto': forms.TextInput(attrs={'class': 'form-control'}),
+            'cuerpo': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+
 class ReunionForm(forms.ModelForm):
     destinatario = forms.ModelChoiceField(
         queryset = Persona.objects.filter(usuario__tipo_usuario__gte=3),
@@ -112,3 +123,4 @@ class ReunionForm(forms.ModelForm):
     class Meta:
         model = Reunion
         fields = ['titulo', 'cuerpo', 'fecha', 'destinatario']
+

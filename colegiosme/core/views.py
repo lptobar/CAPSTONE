@@ -1260,6 +1260,37 @@ def eliminar_bloque_horario(request, bloque_id):
 
     return redirect('listar_bloques_horarios')
 
+## --Mensajeria Interna-- ##
+
+def bandeja_entrada(request):
+    mensajes_recibidos = EstadoMensaje.objects.filter(destinatario=request.user)
+    return render(request, 'mensaje/bandeja_entrada.html', {'mensajes_recibidos': mensajes_recibidos})
+
+def detalle_mensaje(request, id_mensaje):
+    estadoMensaje =EstadoMensaje.objects.get(destinatario=request.user, id_estado_mensaje=id_mensaje)
+    if not estadoMensaje.leido:
+        estadoMensaje.leido = True
+        estadoMensaje.fecha_leido = timezone.now()
+        estadoMensaje.save()
+    print(estadoMensaje.mensaje)
+    return render(request, 'mensaje/detalle_mensaje.html', {'mensaje': estadoMensaje.mensaje})
+
+def nuevo_mensaje(request):
+    if request.method == 'POST':
+        form = MensajeForm(request.POST)
+        if form.is_valid():
+            mensaje = form.save(commit=False)
+            mensaje.remitente = request.user
+            mensaje.save()
+            form.save_m2m()  # Para guardar los destinatarios
+            # Crear Estado de Mensaje para cada destinatario
+            for destinatario in form.cleaned_data['destinatario']:
+                EstadoMensaje.objects.create(mensaje=mensaje, destinatario=destinatario)
+            return redirect('bandeja_entrada')
+    else:
+        form = MensajeForm()
+    return render(request, 'mensaje/nuevo_mensaje.html', {'form': form})
+
 def portal_reuniones(request):
     return render(request, 'reuniones/ver-reuniones.html')
 
@@ -1288,3 +1319,4 @@ def obtener_reuniones(request):
     serializer = ReunionSerializer(reuniones, many=True)
 
     return Response(serializer.data)
+

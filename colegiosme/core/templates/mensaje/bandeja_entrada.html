@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2 class="mb-4">Bandeja de entrada</h2>
+<div class="list-group">
+    {% for estado_mensaje in mensajes_recibidos %}
+        <a href="{% url 'detalle_mensaje' estado_mensaje.id_estado_mensaje %}"
+           class="list-group-item list-group-item-action {% if not estado_mensaje.leido %}list-group-item-info{% endif %}">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ estado_mensaje.mensaje.asunto }}</h5>
+                <small class="text-muted">{{ estado_mensaje.mensaje.fecha_envio|date:"d M Y, H:i" }}</small>
+            </div>
+            <p class="mb-1">
+                {% if estado_mensaje.leido %}
+                    <span class="badge bg-success">Leído</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">No leído</span>
+                {% endif %}
+            </p>
+            <small class="text-muted">De: {{ estado_mensaje.mensaje.remitente }}</small>
+        </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card my-4">
+    <div class="card-header bg-primary text-black">
+        <h2 class="h4 mb-0">{{ mensaje.asunto }}</h2>
+    </div>
+    <div class="card-body">
+        <p class="mb-2"><strong>De:</strong> {{ mensaje.remitente }}</p>
+        <p class="mb-4 text-muted">{{ mensaje.fecha_envio|date:"d M Y, H:i" }}</p>
+        <p>{{ mensaje.cuerpo|linebreaks }}</p>
+    </div>
+    <div class="card-footer text-end">
+        <a href="{% url 'bandeja_entrada' %}" class="btn btn-secondary">Volver a la bandeja de entrada</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-black">
+            <h2 class="h4 mb-0">Nuevo Mensaje</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form.asunto.label_tag }}
+                    {{ form.asunto|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.destinatario.label_tag }}
+                    {{ form.destinatario|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.cuerpo.label_tag }}
+                    {{ form.cuerpo|add_class:"form-control" }}
+                </div>
+                
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                    <a href="{% url 'bandeja_entrada' %}" class="btn btn-secondary ms-2">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -96,3 +96,13 @@ class BloqueHorarioForm(forms.ModelForm):
     class Meta:
         model = BloqueHorario
         fields = ['nombre_bloque', 'hora_inicio', 'hora_fin']
+
+class MensajeForm(forms.ModelForm):
+    class Meta:
+        model = Mensaje
+        fields = ['destinatario', 'asunto', 'cuerpo']
+        widgets = {
+            'destinatario': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'asunto': forms.TextInput(attrs={'class': 'form-control'}),
+            'cuerpo': forms.Textarea(attrs={'class': 'form-control'}),
+        }

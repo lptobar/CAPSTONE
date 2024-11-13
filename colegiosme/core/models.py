@@ -38,12 +38,18 @@ class TipoUsuario(models.Model):
     id_tipo_usuario = models.AutoField(primary_key=True)
     nombre_tipo_usuario = models.CharField(max_length=40)
 
+    def __str__(self):
+        return self.nombre_tipo_usuario
+
 class Usuario(AbstractUser):
     first_name = None
     last_name = None
 
     tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.PROTECT, db_column='id_tipo_usuario')
     persona = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_persona')
+
+    def __str__(self):
+        return f'{self.persona}'
 
 ## -- DIRECCION -- ##
 class Region(models.Model):
@@ -363,4 +369,18 @@ class EstadoMensaje(models.Model):
     
     
     def __str__(self):
-        return f'Mensaje {self.mensaje.id_mensaje} para {self.destinatario} - Leído: {self.leido}'
+
+## -- REUNIONES -- ##
+class EstadoReunion(models.Model):
+    id_estado_reunion = models.AutoField(primary_key=True)
+    nombre_estado_reunion = models.CharField(max_length=25)
+
+class Reunion(models.Model):
+    id_reunion = models.AutoField(primary_key=True)
+    titulo = models.CharField(max_length=100)
+    cuerpo = models.TextField()
+    fecha = models.DateTimeField()
+    remitente = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_remitente', related_name='id_remitente')
+    destinatario = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_destinatario')
+    estado_reunion = models.ForeignKey('EstadoReunion', on_delete=models.PROTECT, db_column='id_estado_reunion', default='1')
+

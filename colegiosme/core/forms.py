@@ -97,6 +97,7 @@ class BloqueHorarioForm(forms.ModelForm):
         model = BloqueHorario
         fields = ['nombre_bloque', 'hora_inicio', 'hora_fin']
 
+
 class MensajeForm(forms.ModelForm):
     class Meta:
         model = Mensaje
@@ -106,3 +107,20 @@ class MensajeForm(forms.ModelForm):
             'asunto': forms.TextInput(attrs={'class': 'form-control'}),
             'cuerpo': forms.Textarea(attrs={'class': 'form-control'}),
         }
+
+class ReunionForm(forms.ModelForm):
+    destinatario = forms.ModelChoiceField(
+        queryset = Persona.objects.filter(usuario__tipo_usuario__gte=3),
+        empty_label = 'Elige un tipo de usuario',
+    )
+    fecha = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={
+            'type': 'datetime-local',
+            'id': 'fecha',  # Asigna el ID que necesites
+        })
+    )
+
+    class Meta:
+        model = Reunion
+        fields = ['titulo', 'cuerpo', 'fecha', 'destinatario']
+

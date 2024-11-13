@@ -16,8 +16,13 @@ INSERT INTO core_cargofuncionario (nombre_cargo_funcionario) VALUES ('Profesor')
 INSERT INTO core_estadoalumno (nombre_estado_alumno) VALUES ('Inactivo'), ('Activo');
 INSERT INTO core_estadomatricula (nombre_estado_matricula) VALUES ('Inactiva'), ('Activa');
 INSERT INTO core_estadomensualidad (nombre_estado_mensualidad) VALUES ('Pendiente'), ('Pagada');
-INSERT INTO core_estadousuario (nombre_estado_usuario) VALUES ('Inactivo'), ('Activo');
 INSERT INTO core_nacionalidad (nombre_nacionalidad) VALUES ('Chileno');
 INSERT INTO core_nivelacademico (nombre_nivel_academico) VALUES ('Nivel academico 1');
 INSERT INTO core_tipoespecializacion (tipo_especializacion) VALUES ('Especializacion 1');
 INSERT INTO core_tiponoticia (nombre_tipo_noticia) VALUES ('Comunidad');
+INSERT INTO core_diasemana (nombre_dia) VALUES ('Lunes'), ('Martes'), ('Miércoles'), ('Jueves'), ('Viernes');
+INSERT INTO core_parentesco (nombre_parentesco) VALUES ('Padre'), ('Madre'), ('Abuelo'), ('Abuela'), ('Tio'), ('Tia');
+INSERT INTO core_estadoreunion (nombre_estado_reunion) VALUES ('Pendiente', 'Aceptada');
+
+INSERT INTO core_region (nombre_region) VALUES ('Región Metropolitana');
+INSERT INTO core_comuna (id_comuna, nombre_comuna, id_region) VALUES (4, 'La Florida', 1);

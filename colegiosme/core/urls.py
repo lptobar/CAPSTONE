@@ -99,10 +99,18 @@ urlpatterns = [
     path('bloques_horarios/crear/', crear_bloque_horario, name='crear_bloque_horario'),
     path('bloques_horarios/actualizar/<int:bloque_id>/', actualizar_bloque_horario, name='actualizar_bloque_horario'),
     path('bloques_horarios/eliminar/<int:bloque_id>/', eliminar_bloque_horario, name='eliminar_bloque_horario'),
+
     ## -- MENSAJERIA INTERNA -- ##
     path('bandeja_entrada/', bandeja_entrada, name='bandeja_entrada'),
     path('detalle_mensaje/<int:id_mensaje>/', detalle_mensaje, name='detalle_mensaje'),
     path('nuevo_mensaje/', nuevo_mensaje, name='nuevo_mensaje'),
+
+
+    ## -- ENTREVISTAS -- ##
+    path('portal-reuniones/', portal_reuniones, name='portal-reuniones'),
+    path('agendar-reunion/', agendar_reunion, name='agendar-reunion'),
+    path('obtener-reuniones/', obtener_reuniones)
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

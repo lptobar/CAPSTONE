@@ -89,6 +89,7 @@ urlpatterns = [
     path('api/asignaturas/<curso>/', obtener_asignaturas2, name='api_asignaturas'),
     ## -- HORARIO -- ##
     path('crear_horario/<id_curso>', horario, name='horario'),
+    path('eliminar_horario/<int:id_horario>/', eliminar_horario, name='eliminar_horario'),
     path('asignar_asignatura/', asignar_asignatura, name='asignar_asignatura'),
     path('listar_horarios/', listar_horarios, name='listar_horarios'),
     path('horario_alumno/', horario_alumno, name='horario_alumno'),

@@ -3,7 +3,7 @@
 
     {% block css %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'styles/horario.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/custom.css' %}">
   
     {% endblock %}
 
@@ -55,8 +55,10 @@
                                             {% for horario in horario_existente %}
                                             
                                                 {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
-                                                    {{ horario.asignatura }}<br>
+                                                
+                                                    {{ horario.asignatura }} <button class="eliminar_horario_btn btn btn-secondary btn-sm float-end" data-horario-id="{{horario.id_horario}}" data-dia-id="{{dia.id_dia}}" data-bloque-id="{{bloque.id_bloque}}">X</button><br>
                                                     <small>{{ horario.profesor }}</small>
+                                                   
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
@@ -74,8 +76,8 @@
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="errorModalLabel">Error al guardar la asignatura</h5>
+                <div class="modal-header bg-warning text-black">
+                    <h5 class="modal-title" id="errorModalLabel">Advertencia</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
@@ -130,8 +132,13 @@
                 const diaId = cell.dataset.dia;
                 const bloqueId = cell.dataset.bloque;
 
-                cell.innerHTML = asignatura ? asignatura.innerHTML : "";
+                // Verificar si la celda ya tiene contenido antes de insertarlo
+                if (cell.innerHTML.trim() === "") {
+                    // Insertar la asignatura y el botón de eliminación
+                    cell.innerHTML = asignatura ? asignatura.innerHTML : "";
+                }
 
+                // Enviar solicitud para asignar la asignatura
                 fetch("{% url 'asignar_asignatura' %}", {
                     method: "POST",
                     headers: {
@@ -144,26 +151,64 @@
                         'dia_id': diaId,
                         'bloque_id': bloqueId,
                         'profesor_id': profesorId,
-                        
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status !== 'success') {
-                        showErrorModal("El profesor ya se encuentra asignado \n en este mismo horario y dia en otro curso" || "Error al guardar la asignatura.");
-                        console.log(data.message)
-                        cell.innerHTML = "";                       
-                        
-                    }else {
+                        // Mostrar error si no se pudo asignar
+                        showErrorModal("El profesor ya se encuentra asignado en este mismo horario y día en otro curso." || "Error al guardar la asignatura.");
+                        cell.innerHTML = "";  // Limpiar la celda si hay un error
+                    } else {
+                        // Marcar la celda como exitosa
                         cell.classList.add('bg-success');
-                        setTimeout(() => cell.classList.remove('bg-success'), 500);
-            }
+                        setTimeout(() => cell.classList.remove('bg-success'), 10000);
+                        location.reload(); 
+                    }
                 })
                 .catch(error => {
                     showErrorModal("Ocurrió un error en la solicitud: " + error.message);
+                    cell.innerHTML = "";  // Limpiar la celda en caso de error
                 });
             });
         });
+
+        document.querySelectorAll('.eliminar_horario_btn').forEach(button=>{
+            button.addEventListener('click',(event)=>{
+                const horarioId=button.getAttribute('data-horario-id');
+                
+
+                if (confirm('¿Estás seguro de que deseas eliminar este dato?')) {
+                fetch(`/eliminar_horario/${horarioId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const diaId=button.getAttribute('data-dia-id');
+                        const bloqueId=button.getAttribute('data-bloque-id');
+                        // Encuentra el elemento por el atributo data-bloque
+                        const cell = document.querySelector(`.horario-cell[data-dia="${diaId}"][data-bloque="${bloqueId}"]`);
+                        console.log(cell)
+                        if (cell) {
+                            cell.innerHTML = ""; // Limpia el contenido de la celda
+                            cell.classList.remove('bg-success'); // Remueve cualquier clase que no corresponda
+                        }
+                    } else {
+                        alert(data.error || 'No se pudo eliminar el dato.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            });
+        });
+
+        
+
     </script>
 
-{% endblock %}
+    {% endblock %}

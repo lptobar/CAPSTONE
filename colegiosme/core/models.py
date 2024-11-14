@@ -349,6 +349,7 @@ class Horario(models.Model):
         return f'{self.curso} - {self.asignatura} - {self.dia_semana} - {self.bloque_horario}'
 
 # --MENSAJERIA INTERNA-- #
+
 class Mensaje(models.Model):
     id_mensaje=models.AutoField(primary_key=True)
     remitente=models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="mensaje_remitente")
@@ -366,14 +367,16 @@ class EstadoMensaje(models.Model):
     destinatario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='mensajes_recibidos')
     fecha_leido = models.DateTimeField(null=True, blank=True)
     leido = models.BooleanField(default=False)
-    
-    
+
     def __str__(self):
+       return f'Mensaje {self.mensaje.id_estado_mensaje} para {self.destinatario} - Leído: {self.leido}' 
 
 ## -- REUNIONES -- ##
+
 class EstadoReunion(models.Model):
     id_estado_reunion = models.AutoField(primary_key=True)
     nombre_estado_reunion = models.CharField(max_length=25)
+
 
 class Reunion(models.Model):
     id_reunion = models.AutoField(primary_key=True)

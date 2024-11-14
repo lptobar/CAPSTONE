@@ -1238,6 +1238,16 @@ def crear_bloque_horario(request):
         form = BloqueHorarioForm()
     return render(request, 'bloque_horario/crear_bloque_horario.html', {'form': form})
 
+def eliminar_horario(request, id_horario):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            horario = Horario.objects.get(pk=id_horario)
+            horario.delete()
+            return JsonResponse({'success': True})
+        except Horario.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Horario no encontrado.'})
+    return JsonResponse({'success': False, 'error': 'Solicitud no válida.'})
+
 def listar_bloques_horarios(request):
     bloques = BloqueHorario.objects.all()
     return render(request, 'bloque_horario/listar_bloques_horarios.html', {'bloques': bloques})

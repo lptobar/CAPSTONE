@@ -1,4 +1,8 @@
 @charset "UTF-8";
+.btn-primary {background-color: #3d6995 ;border-color: #3d6995; border-radius: 0;}
+.bg-primary { background-color:#3d6995 !important;border-radius: 0;}
+.text-primary {color: #3d6995!important;}
+.text-secondary {color: #3d6995 !important;}
 .asignatura-item { cursor: grab; }
 .horario-cell { border: 1px solid #ddd; min-height: 80px; position: relative; }
 .bloque-horario { font-size: 0.9em; font-weight: bold; text-align: center; }
@@ -9,3 +13,16 @@
 .table-header { background-color: #3d6995; color: white; font-weight: bold; text-align: center; }
 .horario-cell { transition: background-color 0.2s ease; }
 .horario-cell:hover { background-color: #f1f1f1; }
+button {border-radius: 0;}
+button:focus:not(:focus-visible) {outline: 0;}
+
+input,
+button,
+select,
+optgroup,
+textarea {margin: 0;font-family: inherit;font-size: inherit;line-height: inherit;}
+
+button,
+select {text-transform: none;}
+
+[role=button] {cursor: pointer;}

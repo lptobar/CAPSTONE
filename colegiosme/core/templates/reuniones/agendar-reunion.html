@@ -1,12 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-3">
-    <h2 style="text-align: center;">Agendar una reunión</h2>
-    <form method="POST" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        {% csrf_token %}
-        {{ formulario }}
-        <button type="submit" class="btn btn-submit">Agendar</button>
-    </form>
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-creacion">
+        <div class="row">
+            <h6 class="text-end my-1 mod-text-obs fecha-form"></h6>
+        </div>
+        <div class="card-title">
+            <h1 class="text-center text-white">Agendar una reunion</h1>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form class="text-center" id="formulario_contacto" method="POST" enctype="multipart/form-data">
+                    <form action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="">Fecha de la reunión</label>
+                            <input type="datetime-local" class="form-control" name="fecha" id="fecha" value="{{ fecha }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Titulo</label>
+                            <input type="text" class="form-control" name="titulo" id="titulo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Descripción</label>
+                            <input type="text" class="form-control" name="cuerpo" id="cuerpo">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Destinatario</label>
+                            <select class="form-control" name="usuario" id="usuario" required>
+                                <option value="">Seleccione un usuario</option>
+                                {% for usuario in usuarios %}
+                                <option value="{{ usuario.persona.id_persona }}">{{ usuario.persona }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button class="btn btn-success" type="submit">Agendar</button>
+                            &nbsp;
+                            <a href="{% url 'ver-reuniones' %}"class="btn btn-secondary">Volver atras</a>
+                        </div>
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -33,6 +33,7 @@
     </div>
 
     <!-- Formulario para la entrega de la tarea -->
+     {% if tarea.tipo_tarea.id_tipo_tarea == 1 %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
@@ -50,13 +51,13 @@
             <button type="submit" class="btn btn-primary">Entregar Tarea</button>
         </div>
     </form>
+    {% endif %}
 </div>
 {% else %}
 <div class="container d-flex align-items-center justify-content-center">
     <div class="card card-listar">
         <div class="card-title">
-            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i
-                    class="bi bi-exclamation-diamond-fill"></i></h1>
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
         </div>
     </div>
 </div>

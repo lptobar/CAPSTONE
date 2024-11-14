@@ -39,6 +39,7 @@
         </div>
     </div>
 
+    {% if tarea.tipo_tarea.id_tipo_tarea == 1 %}
     <h3 class="mt-4">Alumnos que han entregado la tarea</h3>
     <table class="table table-bordered mt-4">
         <thead class="table">
@@ -95,8 +96,7 @@
         {% endfor %}
         </tbody>
     </table>
-
- 
+    {% endif %}
 </div>
 {% else %}
 <div class="container d-flex align-items-center justify-content-center">

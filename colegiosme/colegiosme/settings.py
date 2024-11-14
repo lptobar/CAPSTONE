@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-u6uld!2rn_njdp74fh64k!n!m8j4v4etumf^pkrxtl0k7$)_w)
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    
+    '191.112.46.189',
+    '127.0.0.1'
 ]
 
 
@@ -89,7 +90,6 @@ DATABASES = {
         'PASSWORD': 'root'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -33,14 +33,6 @@
     <h2 style="text-align: center;">Agendamiento de reuniones</h2>
     <a href="{% url 'agendar-reunion' %}" class="btn btn-primary">Agendar hora</a>
     <div id="calendar"></div>
-
-    <div class="appointment-info" id="appointment-info">
-        <button class="close-btn" onclick="close_information()">X</button>
-        <h4 id="titulo"></h4>
-        <p id="cuerpo"></p>
-        <p id="fecha"></p>
-        <p id="destinatario"></p>
-    </div>
 </div>
 
 <script>
@@ -49,19 +41,13 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             timeZone: '-4:00',
+            dateClick: (info) => {
+                const date = `${info.dateStr} 00:00`;
+                location.href = `/agendar-reunion/${date}`;
+            },
             eventClick: (info) => {
-                const data = info.event.extendedProps.info;
-                const titulo = document.getElementById('titulo');
-                const cuerpo = document.getElementById('cuerpo');
-                const fecha = document.getElementById('fecha');
-                const destinatario = document.getElementById('destinatario');
-
-                titulo.innerText = data.titulo;
-                cuerpo.innerText = data.cuerpo;
-                fecha.innerText = data.fecha;
-                destinatario.innerText = `${data.destinatario.p_nombre} ${data.destinatario.s_nombre} ${data.destinatario.ap_paterno} ${data.destinatario.ap_materno}`;
-
-                open_information();
+                const id = info.event.extendedProps.id;
+                location.href = `/info-reunion/${id}/`;
             }
         });
         calendar.render();
@@ -70,26 +56,33 @@
             fetch('/obtener-reuniones/').then(response => response.json())
             .then(data => {
                 data.forEach(reunion => {
+                    let color = ''
+                    switch (reunion.estado_reunion) {
+                        case 1:
+                            color = '#D1B649';
+                            break;
+                        case 2:
+                            color = '#E4080A';
+                            break;
+                        case 3:
+                            color = '#7DDA58';
+                            break;
+                        default:
+                            color = '#000000';
+                            break;
+                    }
+
                     calendar.addEvent({
                         'title': reunion.titulo,
                         'start': reunion.fecha,
-                        'backgroundColor': reunion.estado_reunion == 1 ? '#F02325' : '#6CE13E',
+                        'backgroundColor': color,
                         'extendedProps': {
-                            info: reunion
+                            id: reunion.id_reunion
                         }
                     });
                 });
             });
         });
     });
-
-    function open_information() {
-        document.getElementById('appointment-info').style.display = 'block';
-        overlay.style.display = 'none';
-    }
-    function close_information() {
-        document.getElementById('appointment-info').style.display = 'none';
-        overlay.style.display = 'none';
-    }
 </script>
 {% endblock %}

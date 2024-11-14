@@ -101,8 +101,10 @@ urlpatterns = [
     path('bloques_horarios/eliminar/<int:bloque_id>/', eliminar_bloque_horario, name='eliminar_bloque_horario'),
 
     ## -- ENTREVISTAS -- ##
-    path('portal-reuniones/', portal_reuniones, name='portal-reuniones'),
+    path('ver-reuniones/', ver_reuniones, name='ver-reuniones'),
     path('agendar-reunion/', agendar_reunion, name='agendar-reunion'),
+    path('info-reunion/<id>/', info_reunion, name='info-reunion'),
+    path('agendar-reunion/<fecha>/', agendar_reunion, name='agendar-reunion'),
     path('obtener-reuniones/', obtener_reuniones)
 ]
 if settings.DEBUG:

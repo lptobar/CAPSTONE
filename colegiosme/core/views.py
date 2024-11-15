@@ -32,7 +32,7 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    # persona = Persona(pk=2)
+    # persona = Persona(pk=1)
     # tipo = TipoUsuario(pk=5)
     # Usuario.objects.create_user(username='le.plaza', password='1234', persona=persona, tipo_usuario=tipo)
 

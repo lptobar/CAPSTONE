@@ -23,6 +23,7 @@ INSERT INTO core_tiponoticia (nombre_tipo_noticia) VALUES ('Comunidad');
 INSERT INTO core_diasemana (nombre_dia) VALUES ('Lunes'), ('Martes'), ('Miércoles'), ('Jueves'), ('Viernes');
 INSERT INTO core_parentesco (nombre_parentesco) VALUES ('Padre'), ('Madre'), ('Abuelo'), ('Abuela'), ('Tio'), ('Tia');
 INSERT INTO core_estadoreunion (nombre_estado_reunion) VALUES ('Pendiente'), ('Rechazada'), ('Aceptada'), ('Terminada');
+INSERT INTO core_tipotarea (nombre_tipo_tarea) VALUES ('Entrega'), ('Material');
 
 INSERT INTO core_region (nombre_region) VALUES ('Región Metropolitana');
 INSERT INTO core_comuna (id_comuna, nombre_comuna, id_region) VALUES (4, 'La Florida', 1);

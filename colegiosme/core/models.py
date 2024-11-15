@@ -100,9 +100,15 @@ class TipoNoticia(models.Model):
     id_tipo_noticia = models.AutoField(primary_key=True)
     nombre_tipo_noticia = models.CharField(max_length=40)
 
+    def __str__(self):
+        return self.nombre_tipo_noticia
+
 class PrioridadNoticia(models.Model):
     id_prioridad_noticia = models.AutoField(primary_key=True)
     nombre_prioridad_noticia = models.CharField(max_length=40)
+
+    def __str__(self):
+        return self.nombre_prioridad_noticia
 
 class Noticia(models.Model):
     id_noticia = models.AutoField(primary_key=True)
@@ -281,6 +287,10 @@ class Notas(models.Model):
     lista_asignatura = models.ForeignKey('ListaAsignatura', on_delete=models.PROTECT, db_column='id_lista_asignatura')
 
 ## --TAREA-- ##
+class TipoTarea(models.Model):
+    id_tipo_tarea = models.AutoField(primary_key=True)
+    nombre_tipo_tarea = models.CharField(max_length=25)
+
 class Tarea(models.Model):
     id_tarea = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=100)
@@ -290,6 +300,7 @@ class Tarea(models.Model):
     asignatura = models.ForeignKey('Asignatura',on_delete=models.PROTECT, db_column='id_asignatura')
     funcionario = models.ForeignKey('Funcionario', on_delete=models.PROTECT, db_column='profesor')
     archivos = models.ManyToManyField('Archivo', blank=True, db_column='archivos', related_name='archivos_tareas')
+    tipo_tarea = models.ForeignKey('TipoTarea', on_delete=models.PROTECT, db_column='id_tipo_tarea')
 
     def __str__(self):
         return f'Tarea:{self.titulo} para la asignatura {self.asignatura}'

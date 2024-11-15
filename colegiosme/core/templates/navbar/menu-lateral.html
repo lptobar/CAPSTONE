@@ -24,7 +24,7 @@
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-asignaturas' %}"><i class="bi bi-journal-text"></i> Administración de Asignaturas</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-usuarios' %}"><i class="bi bi-people-fill"></i> Administrador de Usuarios</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-reuniones' %}"><i class="bi bi-journal-bookmark-fill"></i> Reuniones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'ver-reuniones' %}"><i class="bi bi-journal-bookmark-fill"></i> Reuniones</a>
         {% elif request.user.tipo_usuario.id_tipo_usuario == 4 %}
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>

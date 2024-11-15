@@ -1291,24 +1291,50 @@ def nuevo_mensaje(request):
         form = MensajeForm()
     return render(request, 'mensaje/nuevo_mensaje.html', {'form': form})
 
-def portal_reuniones(request):
-    return render(request, 'reuniones/ver-reuniones.html')
-
-def agendar_reunion(request):
+def info_reunion(request, id):
+    reunion = Reunion.objects.get(pk=id)
+    estados = EstadoReunion.objects.all()
     data = {
-        'formulario': ReunionForm()
+        'estados': estados,
+        'reunion': reunion
     }
 
     if request.method == 'POST':
-        formulario = ReunionForm(data=request.POST)
-        if formulario.is_valid():
-            reunion = formulario.save(commit=False)
-            reunion.remitente = request.user.persona
-            reunion.save()
+        estado = request.POST.get('estado')
+        reunion.estado_reunion = EstadoReunion(pk=estado)
+        reunion.save()
 
-            return redirect('portal-reuniones')
-        else:
-            return redirect('agendar-reunion')
+        return redirect('ver-reuniones')
+
+    return render(request, 'reuniones/info-reunion.html', data)
+
+def agendar_reunion(request, fecha):
+    estados = EstadoReunion.objects.all()
+    usuarios = Usuario.objects.filter(tipo_usuario__gte = 3)
+    data = {
+        'estados': estados,
+        'usuarios': usuarios,
+        'fecha': fecha
+    }
+
+    if request.method == 'POST':
+        date = request.POST.get('fecha')
+        titulo = request.POST.get('titulo')
+        cuerpo = request.POST.get('cuerpo')
+        usuario = request.POST.get('usuario')
+        estado = EstadoReunion(pk=1)
+
+        Reunion.objects.create(
+            fecha=date,
+            titulo=titulo,
+            cuerpo=cuerpo,
+            destinatario=Persona(pk=usuario),
+            remitente=request.user.persona,
+            estado_reunion=estado
+        )
+
+        messages.success(request, 'Reunión agendada, espere confirmación.')
+        return redirect('ver-reuniones')
 
     return render(request, 'reuniones/agendar-reunion.html', data)
 

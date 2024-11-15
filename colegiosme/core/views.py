@@ -1291,6 +1291,9 @@ def nuevo_mensaje(request):
         form = MensajeForm()
     return render(request, 'mensaje/nuevo_mensaje.html', {'form': form})
 
+def ver_reuniones(request):
+    return render(request, 'reuniones/ver-reuniones.html')
+    
 def info_reunion(request, id):
     reunion = Reunion.objects.get(pk=id)
     estados = EstadoReunion.objects.all()

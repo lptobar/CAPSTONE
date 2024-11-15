@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if reunion.destinatario == request.user.persona or reunion.remitente == request.user.persona %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-creacion">
+        <div class="row">
+            <h6 class="text-end my-1 mod-text-obs fecha-form"></h6>
+        </div>
+        <div class="card-title">
+            <h1 class="text-center text-white">Detalles de reunion</h1>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form action="" class="text-center" id="formulario_contacto" method="POST" enctype="multipart/form-data">
+                    <form action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="">Fecha de la reunión</label>
+                            <input type="datetime-local" class="form-control" disabled value="{{ reunion.fecha|date:'Y-m-d\\TH:i' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Titulo</label>
+                            <input type="text" class="form-control" disabled value="{{ reunion.titulo }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Descripción</label>
+                            <textarea type="text" class="form-control" disabled>{{ reunion.cuerpo }}</textarea>
+                        </div>
+                        {% if reunion.destinatario == request.user.persona %}
+                        <div class="form-group">
+                            <label for="">Remitente</label>
+                            <input type="text" class="form-control" disabled value="{{ reunion.remitente }}">
+                        </div>
+                        {% else %}
+                        <div class="form-group">
+                            <label for="">Destinatario</label>
+                            <input type="text" class="form-control" disabled value="{{ reunion.destinatario }}">
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <label for="">Estado de la reunión</label>
+                            <select class="form-control" name="estado" id="estado" {%if reunion.destinatario != request.user.persona%}disabled{%endif%}>
+                                {% for value in estados %}
+                                <option value="{{ value.id_estado_reunion }}" {%if value == reunion.estado_reunion%}selected{%endif%}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            {% if reunion.destinatario == request.user.persona %}
+                            <button class="btn btn-success" type="submit">Actualizar</button>
+                            &nbsp;
+                            {% endif %}
+                            <a href="{% url 'ver-reuniones' %}"class="btn btn-secondary">Volver atras</a>
+                        </div>
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="card card-listar">
+        <div class="card-title">
+            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -105,10 +105,11 @@ urlpatterns = [
     path('detalle_mensaje/<int:id_mensaje>/', detalle_mensaje, name='detalle_mensaje'),
     path('nuevo_mensaje/', nuevo_mensaje, name='nuevo_mensaje'),
 
-
     ## -- ENTREVISTAS -- ##
-    path('portal-reuniones/', portal_reuniones, name='portal-reuniones'),
+    path('ver-reuniones/', ver_reuniones, name='ver-reuniones'),
     path('agendar-reunion/', agendar_reunion, name='agendar-reunion'),
+    path('info-reunion/<id>/', info_reunion, name='info-reunion'),
+    path('agendar-reunion/<fecha>/', agendar_reunion, name='agendar-reunion'),
     path('obtener-reuniones/', obtener_reuniones)
 
 ]

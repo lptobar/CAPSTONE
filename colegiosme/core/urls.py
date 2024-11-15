@@ -107,7 +107,6 @@ urlpatterns = [
 
     ## -- ENTREVISTAS -- ##
     path('ver-reuniones/', ver_reuniones, name='ver-reuniones'),
-    path('agendar-reunion/', agendar_reunion, name='agendar-reunion'),
     path('info-reunion/<id>/', info_reunion, name='info-reunion'),
     path('agendar-reunion/<fecha>/', agendar_reunion, name='agendar-reunion'),
     path('obtener-reuniones/', obtener_reuniones)

@@ -375,6 +375,9 @@ class EstadoReunion(models.Model):
     id_estado_reunion = models.AutoField(primary_key=True)
     nombre_estado_reunion = models.CharField(max_length=25)
 
+    def __str__(self):
+        return self.nombre_estado_reunion
+
 class Reunion(models.Model):
     id_reunion = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=100)
@@ -383,4 +386,3 @@ class Reunion(models.Model):
     remitente = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_remitente', related_name='id_remitente')
     destinatario = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_destinatario')
     estado_reunion = models.ForeignKey('EstadoReunion', on_delete=models.PROTECT, db_column='id_estado_reunion', default='1')
-

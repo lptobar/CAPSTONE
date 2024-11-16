@@ -32,9 +32,9 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    # persona = Persona(pk=1)
-    # tipo = TipoUsuario(pk=5)
-    # Usuario.objects.create_user(username='le.plaza', password='1234', persona=persona, tipo_usuario=tipo)
+    #persona = Persona(pk=6)
+    #tipo = TipoUsuario(pk=2)
+    #Usuario.objects.create_user(username='jies.rojas', password='1234', persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -976,7 +976,7 @@ def crear_tarea(request):
                 tarea.archivos.add(nuevo_archivo) 
 
             messages.success(request, 'Tarea creada satifactoriamente')
-            print(tarea.curso.id_curso)
+            
             emails_alumnos, emails_apoderados = obtener_emails_curso(id_curso=tarea.curso.id_curso)
             asunto=f"Nueva Tarea {tarea.titulo}"
             mensaje=f"Hola,\n se informa que se acaba de subir una nueva tarea para la asignatura {tarea.asignatura} ,\n {tarea.descripcion},\n tiene plazo hasta {tarea.fecha_fin} para entregar la Tarea."
@@ -1025,7 +1025,7 @@ def ver_tareas_alumno(request):
     matricula = Matricula.objects.get(alumno=alumno)
     tareas = Tarea.objects.filter(curso=matricula.curso)
 
-    print(tareas)
+    
 
     return render(request,'tareas/tareas_alumno.html', { 'tareas': tareas })
 
@@ -1150,8 +1150,40 @@ def horario(request, id_curso):
     
     return render(request, 'horario/crear_horario.html', context)
 
+def eliminar_horario(request, id_horario):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            horario = Horario.objects.get(id_horario=id_horario)
+            horario.delete()
+            return JsonResponse({'success': True})
+        except Horario.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Horario no encontrado.'})
+    return JsonResponse({'success': False, 'error': 'Solicitud no válida.'})
+
+
 def horario_alumno(request):
-    alumno = Alumno.objects.get(persona=request.user.persona)
+   if request.user.tipo_usuario.id_tipo_usuario == 1:
+
+        alumno = Alumno.objects.get(persona=request.user.persona)
+        matricula = Matricula.objects.get(alumno=alumno)
+        asignaturas = Asignatura.objects.filter(curso=matricula.curso)
+        bloques = BloqueHorario.objects.all()  
+        dias_semana = DiaSemana.objects.all()
+        horarios_existentes = Horario.objects.filter(curso=matricula.curso)
+        context = {
+            'curso': matricula.curso,
+            'asignaturas': asignaturas,
+            'bloques': bloques,
+            'dias_semana': dias_semana,
+            'horario_existente':horarios_existentes,
+            }
+        
+        return render(request, 'horario/horario_alumno.html', context)
+   else: return render(request,'horario/horario_alumno.html')
+  
+    
+def horario_alumno_ap(request,id_persona):
+    alumno = Alumno.objects.get(persona=id_persona)
     matricula = Matricula.objects.get(alumno=alumno)
     asignaturas = Asignatura.objects.filter(curso=matricula.curso)
     bloques = BloqueHorario.objects.all()  
@@ -1165,7 +1197,29 @@ def horario_alumno(request):
         'horario_existente':horarios_existentes,
     }
     
-    return render(request, 'horario/horario_alumno.html', context)
+    return render(request, 'horario/horario_alumno_ap.html', context)
+
+def horario_apoderado(request):
+    apoderado = Apoderado.objects.get(persona=request.user.persona)
+    grupo_familiar = GrupoFamiliar.objects.filter(apoderado=apoderado)
+
+    alumno_info = []    
+    for alumno in grupo_familiar:
+        matriculas = Matricula.objects.filter(alumno_id=alumno.alumno.id_alumno)
+        for matricula in matriculas:
+            alumno_info.append({
+                'curso': matricula.curso,
+                'id_curso': matricula.curso.id_curso, 
+                'alumno': matricula.alumno.persona,
+                'id_persona':matricula.alumno.persona.id_persona
+            })
+         
+
+    context = {
+        'apoderado': apoderado,
+        'datos': alumno_info
+    }  
+    return render(request, 'horario/horario_apoderado.html', context)
 
 def horario_profesor(request):
     profesor = Funcionario.objects.get(persona=request.user.persona)
@@ -1272,7 +1326,7 @@ def detalle_mensaje(request, id_mensaje):
         estadoMensaje.leido = True
         estadoMensaje.fecha_leido = timezone.now()
         estadoMensaje.save()
-    print(estadoMensaje.mensaje)
+   
     return render(request, 'mensaje/detalle_mensaje.html', {'mensaje': estadoMensaje.mensaje})
 
 def nuevo_mensaje(request):

@@ -2,48 +2,54 @@
 
 {% block content %}
 {% if request.user.tipo_usuario.id_tipo_usuario == 1 %}
-<!-- Tabla de horario -->
-<div class="col-md-9">
-    <h4>Horario {{ curso }}</h4>
-    <div class="horario-table p-3">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th class="table-header">Hora/Día</th>
-                    {% for dia in dias_semana %}
-                        <th class="table-header">{{ dia }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for bloque in bloques %}
+<!-- Contenedor del horario -->
+<div class="container d-flex justify-content-center align-items-center py-5">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 1200px;">
+        <div class="d-flex justify-content-between">
+            <h2 class="text-center">Horario de {{ curso }}</h2>
+            
+        </div>
+
+        <div class="horario-table p-3">
+            <table class="table table-bordered text-center">
+                <thead>
                     <tr>
-                        <td class="bloque-horario">
-                            {{ bloque.hora_inicio|date:"H:i" }} - {{ bloque.hora_fin|date:"H:i" }}
-                        </td>
+                        <th class="table-header">Hora/Día</th>
                         {% for dia in dias_semana %}
-                            <td class="horario-cell" data-dia="{{ dia.id_dia }}" data-bloque="{{ bloque.id_bloque }}">
-                                {% for horario in horario_existente %}
-                                
-                                    {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
-                                        {{ horario.asignatura }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
+                            <th class="table-header">{{ dia }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for bloque in bloques %}
+                        <tr>
+                            <td class="bloque-horario">
+                                {{ bloque.hora_inicio|date:"H:i" }} - {{ bloque.hora_fin|date:"H:i" }}
+                            </td>
+                            {% for dia in dias_semana %}
+                                <td class="horario-cell" data-dia="{{ dia.id_dia }}" data-bloque="{{ bloque.id_bloque }}">
+                                    {% for horario in horario_existente %}
+                                        {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
+                                            {{ horario.asignatura }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-</div>
-</div>
+
 {% else %}
-<div class="container d-flex align-items-center justify-content-center">
-    <div class="card card-listar">
+<div class="container d-flex align-items-center justify-content-center py-5">
+    <div class="card card-listar shadow-lg">
         <div class="card-title">
-            <h1 class="text-center text-white"><i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado <i class="bi bi-exclamation-diamond-fill"></i></h1>
+            <h1 class="text-center text-white">
+                <i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado
+                <i class="bi bi-exclamation-diamond-fill"></i>
+            </h1>
         </div>
     </div>
 </div>

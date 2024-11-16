@@ -3,7 +3,7 @@
 
     {% block css %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'styles/horario.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/custom.css' %}">
   
     {% endblock %}
 
@@ -23,7 +23,7 @@
                 <h4>Asignaturas</h4>
                 <div id="asignaturas" data-curso-id="{{ curso.id }}">
                     {% for asignatura in asignaturas %}
-                        <div class="asignatura-item bg-primary text-white" draggable="true" data-id="{{ asignatura.id_asignatura }}" data-profesor-id="{{ asignatura.funcionario.id_funcionario }}">
+                        <div class="asignatura-item bg-primary text-white" draggable="true" data-id="{{asignatura.id_asignatura}}" data-profesor-id="{{asignatura.funcionario.id_funcionario}}">
                             {{ asignatura }}<br>
                             <small>{{ asignatura.funcionario }}</small>
                         </div>
@@ -55,7 +55,7 @@
                                             {% for horario in horario_existente %}
                                             
                                                 {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
-                                                    {{ horario.asignatura }}<br>
+                                                    {{ horario.asignatura }}<button class="eliminar-horario-btn btn btn-secondary btn-sm float-end" data-horario-id="{{horario.id_horario}}" data-dia-id="{{dia.id_dia}}" data-bloque-id="{{bloque.id_bloque}}">x</button><br>
                                                     <small>{{ horario.profesor }}</small>
                                                 {% endif %}
                                             {% endfor %}
@@ -74,8 +74,8 @@
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="errorModalLabel">Error al guardar la asignatura</h5>
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="errorModalLabel">Advertencia</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
@@ -151,12 +151,12 @@
                 .then(data => {
                     if (data.status !== 'success') {
                         showErrorModal("El profesor ya se encuentra asignado \n en este mismo horario y dia en otro curso" || "Error al guardar la asignatura.");
-                        console.log(data.message)
+                        
                         cell.innerHTML = "";                       
                         
                     }else {
                         cell.classList.add('bg-success');
-                        setTimeout(() => cell.classList.remove('bg-success'), 500);
+                        setTimeout(() => {cell.classList.remove('bg-success');location.reload();}, 500);
             }
                 })
                 .catch(error => {
@@ -164,6 +164,40 @@
                 });
             });
         });
+        document.querySelectorAll('.eliminar-horario-btn').forEach(button=>{
+            button.addEventListener('click',(event)=>{
+                
+                const id_horario= button.getAttribute('data-horario-id');
+                const id_dia=button.getAttribute('data-dia-id');
+                const id_bloque=button.getAttribute('data-bloque-id');
+
+                if (confirm('¿Estás seguro de que deseas eliminar este dato?')) {
+                fetch(`/eliminar_horario/${id_horario}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Encuentra el elemento por el atributo data-bloque
+                        const cell = document.querySelector(`.horario-cell[data-dia="${id_dia}"][data-bloque="${id_bloque}"]`);
+                        if (cell) {
+                            cell.innerHTML = ""; // Limpia el contenido de la celda
+                            cell.classList.remove('bg-success'); // Remueve cualquier clase que no corresponda
+                        }
+                    } else {
+                        alert(data.error || 'No se pudo eliminar el dato.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+                }
+        
+            });
+        });
     </script>
+    
 
 {% endblock %}

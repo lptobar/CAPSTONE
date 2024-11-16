@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if tipo_usuario == 3 %}
+{% if request.user.tipo_usuario.id_tipo_usuario == 2 %}
 <!-- Contenedor del horario -->
 <div class="container d-flex justify-content-center align-items-center py-5">
     <div class="card shadow-lg p-4 w-100" style="max-width: 1200px;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Horario de {{ profesor }}</h4>
-          
+        <div class="d-flex justify-content-between">
+            <h2 class="text-center">Horario de {{ curso }}</h2>
+            <a href="{% url 'horario_apoderado' %}" class="btn btn-primary">Volver</a>
         </div>
 
         <div class="horario-table p-3">
@@ -16,7 +16,7 @@
                     <tr>
                         <th class="table-header">Hora/Día</th>
                         {% for dia in dias_semana %}
-                            <th class="table-header">{{ dia }}</th> 
+                            <th class="table-header">{{ dia }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -30,8 +30,7 @@
                                 <td class="horario-cell" data-dia="{{ dia.id_dia }}" data-bloque="{{ bloque.id_bloque }}">
                                     {% for horario in horario_existente %}
                                         {% if horario.dia_semana.id_dia == dia.id_dia and horario.bloque_horario.id_bloque == bloque.id_bloque %}
-                                            {{ horario.asignatura }}<br>
-                                            <small>{{ horario.curso }}</small>
+                                            {{ horario.asignatura }}
                                         {% endif %}
                                     {% endfor %}
                                 </td>
@@ -48,7 +47,7 @@
     <div class="card card-listar shadow-lg">
         <div class="card-title">
             <h1 class="text-center text-white">
-                <i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado 
+                <i class="bi bi-exclamation-diamond-fill"></i> Acceso denegado
                 <i class="bi bi-exclamation-diamond-fill"></i>
             </h1>
         </div>

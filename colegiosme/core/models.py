@@ -379,7 +379,7 @@ class EstadoMensaje(models.Model):
     leido = models.BooleanField(default=False)
     
     def __str__(self):
-        return self.mensaje
+        return f'Mensaje {self.mensaje.id} para {self.destinatario} - Leído: {self.leido}'
 
 ## -- REUNIONES -- ##
 class EstadoReunion(models.Model):

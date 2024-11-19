@@ -107,6 +107,8 @@ urlpatterns = [
     path('bandeja_entrada/', bandeja_entrada, name='bandeja_entrada'),
     path('detalle_mensaje/<int:id_mensaje>/', detalle_mensaje, name='detalle_mensaje'),
     path('nuevo_mensaje/', nuevo_mensaje, name='nuevo_mensaje'),
+    path('api/destinatarios/', obtener_destinatarios, name='obtener_destinatarios'),
+    path('responder_mensaje/<int:id_mensaje>/', responder_mensaje, name='responder_mensaje'),
 
     ## -- ENTREVISTAS -- ##
     path('ver-reuniones/', ver_reuniones, name='ver-reuniones'),

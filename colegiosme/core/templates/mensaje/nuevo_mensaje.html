@@ -1,39 +1,230 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-{% load widget_tweaks %}
+{% block css %}
+<style>
+    /* Estilo personalizado */
+    .container {
+        max-width: 1200px;
+    }
 
-<div class="container my-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-black">
-            <h2 class="h4 mb-0">Nuevo Mensaje</h2>
+    .list-group-item {
+        cursor: pointer;
+    }
+
+    .list-group-item:hover {
+        background-color: #f0f8ff;
+    }
+
+    .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-group {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+    .col-md-6 {
+        padding: 20px;
+    }
+
+    .btn-eliminar {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 50%;
+    }
+
+    .btn-eliminar:hover {
+        background-color: #d32f2f;
+    }
+</style>
+  
+{% endblock %}
+  
+{% block content %}
+    <title>Nuevo Mensaje</title>
+    <div class="container mt-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Enviar Mensaje</h2>
+            <a href="{% url 'bandeja_entrada' %}" class="btn btn-primary">Volver</a>
         </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    {{ form.asunto.label_tag }}
-                    {{ form.asunto|add_class:"form-control" }}
+        <form id="form-mensajes" method="POST" action="{% url 'nuevo_mensaje' %}">
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- Card para la lista de destinatarios (izquierda) -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Destinatarios</h5>
+                            <div class="mb-5">
+                                <label for="tipo_destinatario" class="form-label">Tipo de destinatario:</label>
+                                {% if request.user.tipo_usuario.id_tipo_usuario == 5 or request.user.tipo_usuario.id_tipo_usuario == 4 or request.user.tipo_usuario.id_tipo_usuario == 3 %}
+                                    <select id="tipo_destinatario" name="tipo_destinatario" class="form-select" required>
+                                        <option value="">Selecciona un tipo</option>
+                                        <option value="Todos los Usuarios">Todos los Usuarios</option>
+                                        <option value="Curso">Curso</option>
+                                        <option value="Todos los Apoderados">Todos los Apoderados</option>
+                                        <option value="Todos los Alumnos">Todos los Alumnos</option>
+                                        <option value="Todos los Profesores">Todos los Profesores</option>
+                                        <option value="Todos los Administrativos">Todos los Administrativos</option>
+                                        <option value="Usuarios Administradores">Usuarios Administradores</option>
+                                    </select>
+                                {% elif request.user.tipo_usuario.id_tipo_usuario == 2 or request.user.tipo_usuario.id_tipo_usuario == 1 %}
+                                    <select id="tipo_destinatario" name="tipo_destinatario" class="form-select" required>
+                                        <option value="">Selecciona un tipo</option>
+                                        <option value="Todos los Profesores">Todos los Profesores</option>
+                                    </select>
+                                {% endif %}
+                            </div>
+
+                            <!-- Selector de curso (visible solo si se selecciona "Curso") -->
+                            <div id="curso-container" class="mb-3" style="display: none;">
+                                <label for="curso" class="form-label">Curso:</label>
+                                <select id="curso" name="curso" class="form-select">
+                                    {% for curso in cursos %}
+                                    <option value="{{ curso.id_curso }}">{{ curso }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Lista de posibles destinatarios -->
+                            <div class="mb-3">
+                                <label for="lista_destinatarios" class="form-label">Lista de destinatarios:</label>
+                                <ul id="lista_destinatarios" class="list-group">
+                                    <!-- Opciones llenadas dinámicamente -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="mb-3">
-                    {{ form.destinatario.label_tag }}
-                    {{ form.destinatario|add_class:"form-control" }}
+
+                <!-- Card para el contenido del mensaje (derecha) -->
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Contenido del Mensaje</h5>
+
+                            <!-- Lista de destinatarios seleccionados -->
+                            <div class="mb-3">
+                                <label for="destinatarios_seleccionados" class="form-label">Destinatarios seleccionados:</label>
+                                <ul id="destinatarios_seleccionados" class="list-group">
+                                    <!-- Destinatarios seleccionados -->
+                                </ul>
+                                <input type="hidden" id="destinatarios_input" name="destinatarios" value="">
+                            </div>
+
+                            <!-- Campo de asunto -->
+                            <div class="mb-3">
+                                <label for="asunto" class="form-label">Asunto:</label>
+                                <input type="text" id="asunto" name="asunto" class="form-control" required>
+                            </div>
+
+                            <!-- Campo de cuerpo -->
+                            <div class="mb-3">
+                                <label for="cuerpo" class="form-label">Cuerpo del mensaje:</label>
+                                <textarea id="cuerpo" name="cuerpo" rows="5" class="form-control" required></textarea>
+                            </div>
+
+                            <!-- Nueva opción: Permite respuestas -->
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="permitir_respuestas" name="permitir_respuestas">
+                                <label class="form-check-label" for="permitir_respuestas">Permite respuestas</label>
+                            </div>
+
+                            <!-- Nueva opción: Enviar por correo -->
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="enviar_por_mail" name="enviar_por_mail">
+                                <label class="form-check-label" for="enviar_por_mail">Enviar por correo</label>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                <button type="reset" class="btn btn-secondary">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="mb-3">
-                    {{ form.cuerpo.label_tag }}
-                    {{ form.cuerpo|add_class:"form-control" }}
-                </div>
-                
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                    <a href="{% url 'bandeja_entrada' %}" class="btn btn-secondary ms-2">Cancelar</a>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-</div>
+
+{% endblock %}
+
+{% block script %}
+    <!-- Scripts -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tipoSelector = document.getElementById("tipo_destinatario");
+            const cursoSelector = document.getElementById("curso");
+            const cursoContainer = document.getElementById("curso-container");
+            const listaDestinatarios = document.getElementById("lista_destinatarios");
+            const destinatariosSeleccionados = document.getElementById("destinatarios_seleccionados");
+            const destinatariosInput = document.getElementById("destinatarios_input");
+
+            // Actualiza el valor del campo hidden con los destinatarios seleccionados
+            function actualizarDestinatariosInput() {
+                const ids = Array.from(destinatariosSeleccionados.children).map(li => li.dataset.id);
+                destinatariosInput.value = ids.join(",");
+            }
+
+            // Cargar destinatarios según tipo seleccionado
+            function cargarDestinatarios() {
+                const tipo = tipoSelector.value;
+                const cursoId = cursoSelector ? cursoSelector.value : null;
+
+                let url = `/api/destinatarios/?tipo=${tipo}`;
+                if (cursoId) {
+                    url += `&curso_id=${cursoId}`;
+                }
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Error en la respuesta del servidor");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        listaDestinatarios.innerHTML = "";
+                        data.forEach(destinatario => {
+                            const li = document.createElement("li");
+                            li.className = "list-group-item";
+                            li.textContent = destinatario.nombre;
+                            li.dataset.id = destinatario.id;
+
+                            li.ondblclick = () => {
+                                // Agregar destinatario a la lista de seleccionados
+                                destinatariosSeleccionados.appendChild(li);
+                                li.ondblclick = () => {
+                                    // Quitar destinatario de la lista de seleccionados
+                                    listaDestinatarios.appendChild(li);
+                                    actualizarDestinatariosInput();
+                                };
+                                actualizarDestinatariosInput();
+                            };
+
+                            listaDestinatarios.appendChild(li);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error al cargar destinatarios:", error);
+                        alert("Ocurrió un error al cargar los destinatarios. Por favor, inténtalo nuevamente.");
+                    });
+            }
+
+            // Mostrar u ocultar el selector de curso
+            tipoSelector.addEventListener("change", function () {
+                cursoContainer.style.display = tipoSelector.value === "Curso" ? "block" : "none";
+                cargarDestinatarios();
+            });
+
+            // Inicializar
+            tipoSelector.dispatchEvent(new Event("change"));
+        });
+    </script>
 {% endblock %}

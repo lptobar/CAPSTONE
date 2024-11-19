@@ -2,26 +2,46 @@
 {% load static %}
 
 {% block content %}
-
-<h2 class="mb-4">Bandeja de entrada</h2>
-<div class="list-group">
-    {% for estado_mensaje in mensajes_recibidos %}
-        <a href="{% url 'detalle_mensaje' estado_mensaje.id_estado_mensaje %}"
-           class="list-group-item list-group-item-action {% if not estado_mensaje.leido %}list-group-item-info{% endif %}">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{ estado_mensaje.mensaje.asunto }}</h5>
-                <small class="text-muted">{{ estado_mensaje.mensaje.fecha_envio|date:"d M Y, H:i" }}</small>
-            </div>
-            <p class="mb-1">
-                {% if estado_mensaje.leido %}
-                    <span class="badge bg-success">Leído</span>
-                {% else %}
-                    <span class="badge bg-warning text-dark">No leído</span>
-                {% endif %}
-            </p>
-            <small class="text-muted">De: {{ estado_mensaje.mensaje.remitente }}</small>
-        </a>
-    {% endfor %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Bandeja de entrada</h2>
+        <a href="{% url 'nuevo_mensaje' %}" class="btn btn-primary">Crear Mensaje</a>
+    </div>
+    
+    <!-- Mostrar mensaje si no hay correos -->
+    {% if mensajes_recibidos %}
+        <div class="list-group">
+            {% for estado_mensaje in mensajes_recibidos %}
+                <a href="{% url 'detalle_mensaje' estado_mensaje.id_estado_mensaje %}"
+                   class="list-group-item list-group-item-action {% if not estado_mensaje.estado_leido %}list-group-item-info{% endif %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ estado_mensaje.mensaje.asunto }}</h5>
+                        <small class="text-muted">{{ estado_mensaje.mensaje.fecha_envio|date:"d M Y, H:i" }}</small>
+                    </div>
+                    <p class="mb-1">
+                        {% if estado_mensaje.estado_leido %}
+                            <span class="badge bg-success">Leído</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">No leído</span>
+                        {% endif %}
+                    </p>
+                    <small class="text-muted">De: {{ estado_mensaje.mensaje.remitente }}</small>
+                    
+                    <!-- Mostrar si hay respuestas a este mensaje -->
+                    {% if estado_mensaje.mensaje.estadomensaje_set.count > 1 %}
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-reply"></i> Respuestas: {{ estado_mensaje.mensaje.estadomensaje_set.count|add:"-1" }}
+                            </small>
+                        </div>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No tienes mensajes en la bandeja de entrada.
+        </div>
+    {% endif %}
 </div>
-
 {% endblock %}

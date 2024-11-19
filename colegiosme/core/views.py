@@ -1317,33 +1317,139 @@ def eliminar_bloque_horario(request, bloque_id):
 ## --Mensajeria Interna-- ##
 
 def bandeja_entrada(request):
-    mensajes_recibidos = EstadoMensaje.objects.filter(destinatario=request.user)
+    mensajes_recibidos = EstadoMensaje.objects.filter(destinatario=request.user).order_by('-mensaje__fecha_envio')
+
     return render(request, 'mensaje/bandeja_entrada.html', {'mensajes_recibidos': mensajes_recibidos})
 
 def detalle_mensaje(request, id_mensaje):
-    estadoMensaje =EstadoMensaje.objects.get(destinatario=request.user, id_estado_mensaje=id_mensaje)
-    if not estadoMensaje.leido:
-        estadoMensaje.leido = True
-        estadoMensaje.fecha_leido = timezone.now()
-        estadoMensaje.save()
-   
-    return render(request, 'mensaje/detalle_mensaje.html', {'mensaje': estadoMensaje.mensaje})
+    try:
+        # Obtener el estado del mensaje original
+        estado_mensaje_original = EstadoMensaje.objects.get(id_estado_mensaje=id_mensaje, destinatario=request.user)
+    except EstadoMensaje.DoesNotExist:
+        messages.error(request, "No tienes permiso para ver este mensaje.")
+        return redirect('bandeja_entrada')
 
+    # Obtener la historia de conversación completa
+    historia = []
+
+    # Obtener el primer mensaje que contiene el estado del mensaje original
+    primer_mensaje = HistoriaMensaje.objects.filter(estado_mensaje_respuesta__mensaje__id_mensaje=estado_mensaje_original.mensaje.id_mensaje).first()
+    
+    # Si encontramos un mensaje, reconstruimos la conversación completa
+    if primer_mensaje:
+        historia.append(primer_mensaje)
+        siguiente_mensaje = primer_mensaje
+
+        # Recorrer los mensajes hasta el final de la cadena de respuestas
+        while siguiente_mensaje:
+            # Verificar si existe una respuesta al mensaje
+            if siguiente_mensaje.estado_mensaje_respuesta:
+                siguiente_mensaje = HistoriaMensaje.objects.filter(estado_mensaje_respuesta=siguiente_mensaje.estado_mensaje_padre).first()
+                if siguiente_mensaje not in historia:
+                    historia.append(siguiente_mensaje)
+                else: break  
+            else:
+                # Si no hay más respuestas, terminamos el ciclo
+                break
+
+    # Marcar el mensaje como leído si aplica
+    if not estado_mensaje_original.estado_leido and estado_mensaje_original.destinatario == request.user:
+        estado_mensaje_original.estado_leido = True
+        estado_mensaje_original.fecha_leido = timezone.now()
+        estado_mensaje_original.save()
+
+    # Renderizar la vista con el historial completo
+    return render(request, 'mensaje/detalle_mensaje.html', {
+        'estado_mensaje_original': estado_mensaje_original,
+        'historia': historia
+    })
+
+    
 def nuevo_mensaje(request):
+    cursos = Curso.objects.all()
+    
     if request.method == 'POST':
         form = MensajeForm(request.POST)
         if form.is_valid():
             mensaje = form.save(commit=False)
             mensaje.remitente = request.user
             mensaje.save()
-            form.save_m2m()  # Para guardar los destinatarios
-            # Crear Estado de Mensaje para cada destinatario
-            for destinatario in form.cleaned_data['destinatario']:
-                EstadoMensaje.objects.create(mensaje=mensaje, destinatario=destinatario)
+          
+            # Obtener los destinatarios seleccionados
+            destinatarios_ids = request.POST.get('destinatarios', '').split(',')
+            for destinatario_id in destinatarios_ids:
+                destinatario = Usuario.objects.get(id=destinatario_id)
+                primer_mensaje=EstadoMensaje.objects.create(mensaje=mensaje, destinatario=destinatario)
+                HistoriaMensaje.objects.create(estado_mensaje_padre=primer_mensaje, estado_mensaje_respuesta=primer_mensaje)
+                if mensaje.enviar_por_mail:
+                    enviar_correo([destinatario.persona.email],mensaje.asunto, mensaje.cuerpo)
+               
+            
             return redirect('bandeja_entrada')
+        
+        return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
     else:
         form = MensajeForm()
-    return render(request, 'mensaje/nuevo_mensaje.html', {'form': form})
+    
+    return render(request, 'mensaje/nuevo_mensaje.html', {'form': form, 'cursos': cursos})
+
+
+def obtener_destinatarios(request):
+    tipo = request.GET.get("tipo")
+    curso_id = request.GET.get("curso_id", None)  # Opcional, dependiendo del tipo
+
+    if tipo == "Todos los Usuarios":
+        destinatarios = Usuario.objects.all()  # Toda la comunidad
+    elif tipo == "Curso":
+        curso = Curso.objects.get(id_curso=curso_id)
+        matriculas=Matricula.objects.filter(curso=curso)
+        destinatarios = Usuario.objects.filter(persona__id_persona__in=[matricula.alumno.persona.id_persona for matricula in matriculas])
+        if not destinatarios:
+            destinatarios = []
+    elif tipo == "Todos los Alumnos":
+        destinatarios = Usuario.objects.filter(tipo_usuario=1)  
+    elif tipo == "Todos los Profesores":
+        destinatarios = Usuario.objects.filter(tipo_usuario=3)  
+    elif tipo == "Todos los Apoderados":
+        destinatarios = Usuario.objects.filter(tipo_usuario=2)  
+    elif tipo == "Todos los Administrativos":
+        destinatarios = Usuario.objects.filter(tipo_usuario=4)  
+    elif tipo == "Usuarios Administradores":
+        destinatarios = Usuario.objects.filter(tipo_usuario=5)  
+    else:
+        destinatarios = []
+
+    datos = [{"id": usuario.id, "nombre": usuario.persona.p_nombre + " " + usuario.persona.s_nombre + " "+usuario.persona.ap_paterno+ " "+usuario.persona.ap_materno} for usuario in destinatarios]
+    return JsonResponse(datos, safe=False)
+
+def responder_mensaje(request, id_mensaje):
+    mensaje_original = EstadoMensaje.objects.get(id_estado_mensaje=id_mensaje)
+    if request.method == 'POST':
+        form = MensajeForm(request.POST)
+        if form.is_valid():
+            mensaje = form.save(commit=False)
+            mensaje.remitente = request.user
+            mensaje.save()
+          
+            # Obtener los destinatarios seleccionados
+            print("id_remitente",mensaje_original.mensaje.remitente.id)
+            destinatario = Usuario.objects.get(id=mensaje_original.mensaje.remitente.id)
+            respuesta= EstadoMensaje.objects.create(mensaje=mensaje, destinatario=destinatario)
+            HistoriaMensaje.objects.create(estado_mensaje_padre=mensaje_original, estado_mensaje_respuesta=respuesta)
+
+            if mensaje.enviar_por_mail:
+                enviar_correo([destinatario.persona.email],mensaje.asunto, mensaje.cuerpo)
+               
+            
+            return redirect('bandeja_entrada')
+        
+        return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+    else:
+        form = MensajeForm()
+
+    return render(request, 'mensaje/detalle_mensaje.html', {'mensaje': mensaje_original})
+
+## --Reuniones-- ##
 
 def ver_reuniones(request):
     return render(request, 'reuniones/ver-reuniones.html')

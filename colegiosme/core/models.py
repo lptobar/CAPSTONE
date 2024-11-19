@@ -361,25 +361,36 @@ class Horario(models.Model):
 
 # --MENSAJERIA INTERNA-- #
 class Mensaje(models.Model):
-    id_mensaje=models.AutoField(primary_key=True)
-    remitente=models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="mensaje_remitente")
-    destinatario=models.ManyToManyField(Usuario,related_name="mensajes_destinatario")
-    asunto = models.CharField(max_length=100)
+    id_mensaje = models.AutoField(primary_key=True)
+    remitente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="mensajes_enviados")
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+    asunto = models.CharField(max_length=255)
     cuerpo = models.TextField()
-    fecha_envio = models.DateTimeField(default=timezone.now)
-    
+    permitir_respuestas = models.BooleanField(default=True) 
+    enviar_por_mail = models.BooleanField(default=False)  
     def __str__(self):
-        return f'{self.asunto} - {self.remitente}'
+        return f"{self.asunto} (de {self.remitente.persona})"
+
 
 class EstadoMensaje(models.Model):
-    id_estado_mensaje= models.AutoField(primary_key=True)
-    mensaje = models.ForeignKey(Mensaje, on_delete=models.CASCADE, related_name='estados')
-    destinatario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='mensajes_recibidos')
-    fecha_leido = models.DateTimeField(null=True, blank=True)
-    leido = models.BooleanField(default=False)
-    
+    id_estado_mensaje = models.AutoField(primary_key=True)
+    mensaje = models.ForeignKey(Mensaje, on_delete=models.CASCADE, related_name="estados")
+    destinatario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="mensajes_recibidos")
+    estado_leido = models.BooleanField(default=False)  
+    fecha_leido = models.DateTimeField(null=True, blank=True)  
     def __str__(self):
-        return f'Mensaje {self.mensaje.id} para {self.destinatario} - Leído: {self.leido}'
+        estado = "Leído" if self.estado_leido else "No leído"
+        return f"{self.mensaje.asunto} para {self.destinatario.persona} ({estado})"
+
+
+
+class HistoriaMensaje(models.Model):
+    id_historia_mensaje = models.AutoField(primary_key=True)
+    estado_mensaje_padre = models.ForeignKey(EstadoMensaje, on_delete=models.CASCADE, related_name="principal")
+    estado_mensaje_respuesta = models.ForeignKey(EstadoMensaje, on_delete=models.CASCADE, related_name="respuesta")
+
+    def __str__(self):
+        return f"Respuesta al mensaje {self.estado_mensaje_padre.mensaje.id_mensaje}"
 
 ## -- REUNIONES -- ##
 class EstadoReunion(models.Model):

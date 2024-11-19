@@ -2,18 +2,121 @@
 {% load static %}
 
 {% block content %}
-<div class="card my-4">
-    <div class="card-header bg-primary text-black">
-        <h2 class="h4 mb-0">{{ mensaje.asunto }}</h2>
-    </div>
-    <div class="card-body">
-        <p class="mb-2"><strong>De:</strong> {{ mensaje.remitente }}</p>
-        <p class="mb-4 text-muted">{{ mensaje.fecha_envio|date:"d M Y, H:i" }}</p>
-        <p>{{ mensaje.cuerpo|linebreaks }}</p>
-    </div>
-    <div class="card-footer text-end">
-        <a href="{% url 'bandeja_entrada' %}" class="btn btn-secondary">Volver a la bandeja de entrada</a>
+<div class="container my-4">
+    <div class="card shadow">
+        <!-- Encabezado del mensaje -->
+        <div class="card-header bg-primary text-black">
+            <h2 class="h5 mb-0">{{ estado_mensaje_original.mensaje.asunto }}</h2>
+        </div>
+
+        <!-- Contenido del mensaje -->
+        <div class="card-body">
+            <p><strong>De:</strong> {{ estado_mensaje_original.mensaje.remitente }}</p>
+            <p><strong>Para:</strong> {{ estado_mensaje_original.destinatario }}</p>
+            <p class="text-muted mb-4"><small>{{ estado_mensaje_original.mensaje.fecha_envio|date:"d M Y, H:i" }}</small></p>
+            <div class="mb-3">
+                <p>{{ estado_mensaje_original.mensaje.cuerpo|linebreaks }}</p>
+            </div>
+        </div>
+
+        <!-- Historial del mensaje (respuestas)-->
+        {% if historia %}
+        <div class="card-body border-top">
+            <h5>Historial del Mensaje:</h5>
+            <ul class="list-unstyled">
+                {% for mensaje in historia %}
+                {%if mensaje.estado_mensaje_respuesta%}   
+                <li class="mb-3">
+                    <div class="p-3 bg-light rounded shadow-sm">
+                        <p class="mb-1"><strong>De:</strong> {{ mensaje.estado_mensaje_respuesta.mensaje.remitente }}</p>
+                        <p class="text-muted mb-2"><small>Enviado el: {{ mensaje.estado_mensaje_respuesta.mensaje.fecha_envio|date:"d M Y, H:i" }}</small></p>
+                        <p>{{ mensaje.estado_mensaje_respuesta.mensaje.cuerpo|linebreaks }}</p>
+                    </div>
+                </li>
+                {%endif%}   
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+
+        <!-- Formulario para responder al mensaje -->
+        {% if estado_mensaje_original.mensaje.permitir_respuestas %}
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <h5>Responder al Mensaje:</h5>
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                 
+            
+        <div class="card-body border-top">
+            
+            <form method="post" action="{% url 'responder_mensaje' estado_mensaje_original.id_estado_mensaje %}">
+                {% csrf_token %}
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Contenido del Mensaje</h5>
+                            <div class="mb-3">
+                                <label for="remitente" class="form-label">De:</label>
+                                <input type="text"  id="remitente" class="form-control" name="remitente" value="{{estado_mensaje_original.destinatario}}" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="destinatario" class="form-label">para:</label>
+                                <input type="text" id="destinatario" class="form-control" name="destinatario" value="{{estado_mensaje_original.mensaje.remitente}}"readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="asunto" class="form-label">Asunto:</label>
+                                <input type="text" id="asunto" name="asunto" class="form-control" value="{{estado_mensaje_original.mensaje.asunto}}"readonly>
+                            </div>
+            
+                            <div class="mb-3">
+                                <label for="cuerpo" class="form-label">Cuerpo del mensaje:</label>
+                                <textarea id="cuerpo" name="cuerpo" rows="5" class="form-control" required></textarea>
+                            </div>
+                            <div class="form-check mb-3">
+                                {%if not estado_mensaje_original.mensaje.permitir_respuestas%}
+                                <input type="checkbox" class="form-check-input" id="permitir_respuestas" name="permitir_respuestas">
+                                {%else%}
+                                <input type="checkbox" class="form-check-input" id="permitir_respuestas" name="permitir_respuestas"checked>
+                                {%endif%}
+                                <label class="form-check-label" for="permitir_respuestas">Permite respuestas</label>
+                            </div>
+
+                            
+                            <div class="form-check mb-3">
+                                {%if not estado_mensaje_original.mensaje.enviar_por_mail%}
+                                <input type="checkbox" class="form-check-input" id="enviar_por_mail" name="enviar_por_mail">
+                                {%else%}
+                                <input type="checkbox" class="form-check-input" id="enviar_por_mail" name="enviar_por_mail" checked>
+                                {%endif%}
+                                <label class="form-check-label" for="enviar_por_mail">Enviar por correo</label>
+                            </div>                            
+                            <button type="submit" class="btn btn-primary">Enviar Respuesta</button>
+                        </div>
+                    </div>
+                </div>    
+            </form>
+        </div>
     </div>
 </div>
+</div>  
+        {% else %}
+        <div class="card-body border-top">
+            <p class="text-muted">Este mensaje no permite respuestas.</p>
+        </div>
+        {% endif %}
 
+        <!-- Pie de página con botón de regreso -->
+        <div class="card-footer text-end">
+            <a href="{% url 'bandeja_entrada' %}" class="btn btn-secondary">Volver a la bandeja de entrada</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

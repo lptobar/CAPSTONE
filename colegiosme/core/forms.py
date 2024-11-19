@@ -100,11 +100,12 @@ class BloqueHorarioForm(forms.ModelForm):
 class MensajeForm(forms.ModelForm):
     class Meta:
         model = Mensaje
-        fields = ['destinatario', 'asunto', 'cuerpo']
+        fields = [ 'asunto', 'cuerpo' ,'permitir_respuestas','enviar_por_mail']
         widgets = {
-            'destinatario': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'asunto': forms.TextInput(attrs={'class': 'form-control'}),
             'cuerpo': forms.Textarea(attrs={'class': 'form-control'}),
+            'permitir_respuestas': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'enviar_por_mail': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
 
 class ReunionForm(forms.ModelForm):

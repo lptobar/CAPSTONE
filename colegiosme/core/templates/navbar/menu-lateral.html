@@ -45,7 +45,7 @@
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'horario_apoderado' %}"><i class="bi bi-calendar-check"></i></i> Horario</a>    
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-apoderado' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-asistencia' %}"><i class="bi bi-list-check"></i> Asistencias</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'anotaciones-asignaturas' %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-anotaciones' %}"><i class="bi bi-file-earmark-text"></i> Anotaciones</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-mensualidades' %}"><i class="bi bi-journal-bookmark-fill"></i> Pago de Mensualidad</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'ver-reuniones' %}"><i class="bi bi-journal-bookmark-fill"></i> Reuniones</a>
         {% elif request.user.tipo_usuario.id_tipo_usuario == 1 %}

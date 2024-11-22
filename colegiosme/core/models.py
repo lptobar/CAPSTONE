@@ -21,7 +21,7 @@ class Genero(models.Model):
 
 class Persona(models.Model):
     id_persona = models.AutoField(primary_key=True)
-    rut = models.BigIntegerField()
+    rut = models.CharField(max_length=10)
     p_nombre = models.CharField(max_length=40)
     s_nombre = models.CharField(max_length=40, blank=True)
     ap_paterno = models.CharField(max_length=40)
@@ -290,6 +290,9 @@ class Notas(models.Model):
 class TipoTarea(models.Model):
     id_tipo_tarea = models.AutoField(primary_key=True)
     nombre_tipo_tarea = models.CharField(max_length=25)
+
+    def __str__(self):
+       return self.nombre_tipo_tarea 
 
 class Tarea(models.Model):
     id_tarea = models.AutoField(primary_key=True)

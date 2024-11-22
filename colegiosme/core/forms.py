@@ -51,7 +51,7 @@ class PersonaForm(forms.ModelForm):
 
 class TipoUsuarioForm(forms.ModelForm):
     tipo_usuario = forms.ModelChoiceField(
-        queryset = TipoUsuario.objects.filter(id_tipo_usuario__gte=1),
+        queryset = TipoUsuario.objects.filter(id_tipo_usuario__gte=3),
         empty_label = 'Elige un tipo de usuario'
     )
 
@@ -110,7 +110,7 @@ class MensajeForm(forms.ModelForm):
 
 class ReunionForm(forms.ModelForm):
     destinatario = forms.ModelChoiceField(
-        queryset = Persona.objects.filter(usuario__tipo_usuario__gte=3),
+        queryset = Persona.objects.filter(usuario__tipo_usuario__gte=2),
         empty_label = 'Elige un tipo de usuario',
     )
     fecha = forms.DateTimeField(

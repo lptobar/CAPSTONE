@@ -32,9 +32,9 @@ def home(request):
         'noticias': Noticia.objects.all()
     }
 
-    #persona = Persona(pk=6)
-    #tipo = TipoUsuario(pk=2)
-    #Usuario.objects.create_user(username='jies.rojas', password='1234', persona=persona, tipo_usuario=tipo)
+    # persona = Persona(pk=4)
+    # tipo = TipoUsuario(pk=1)
+    # Usuario.objects.create_user(username='he.jaramillo', password='1234', persona=persona, tipo_usuario=tipo)
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -1025,15 +1025,13 @@ def ver_tareas_alumno(request):
     matricula = Matricula.objects.get(alumno=alumno)
     tareas = Tarea.objects.filter(curso=matricula.curso)
 
-    
-
     return render(request,'tareas/tareas_alumno.html', { 'tareas': tareas })
 
 def entregar_tarea(request, id_tarea):
     tarea = Tarea.objects.get(id_tarea=id_tarea)
     alumno = Alumno.objects.get(persona=request.user.persona)
 
-    if timezone.now() > tarea.fecha_fin:
+    if timezone.now() > tarea.fecha_fin and tarea.tipo_tarea == 1:
         return redirect('tareas_alumno')
 
     if request.method == 'POST':

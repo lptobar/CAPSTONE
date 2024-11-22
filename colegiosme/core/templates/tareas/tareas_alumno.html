@@ -22,11 +22,13 @@
                 <td>{{ tarea.asignatura }}</td>
                 <td>{{ tarea.fecha_fin }}</td>
                 <td>
-                    <a href="{% url 'entregar_tarea' tarea.id_tarea %}" class="btn btn-success btn-sm">Entregar Tarea</a>
+                    <a href="{% url 'entregar_tarea' tarea.id_tarea %}" class="btn btn-success btn-sm">Ver {{ tarea.tipo_tarea }}</a>
                 </td>
+                {% if tarea.tipo_tarea.id_tipo_tarea == 1 %}
                 <td>
                     <a href="{% url 'ver_mis_entregas' tarea.id_tarea %}" class="btn btn-danger btn-sm">Ver entregas</a>
                 </td>
+                {% endif %}
             </tr>
             {% empty %}
             <tr>

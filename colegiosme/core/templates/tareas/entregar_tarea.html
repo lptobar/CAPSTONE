@@ -13,7 +13,9 @@
             <p><strong>Asignatura:</strong> {{ tarea.asignatura.lista_asignatura }}</p>
             <p><strong>Curso:</strong> {{ tarea.curso }}</p>
             <p><strong>Descripción:</strong> {{ tarea.descripcion }}</p>
+            {% if tarea.tipo_tarea.id_tipo_tarea == 1 %}
             <p><strong>Fecha límite:</strong> {{ tarea.fecha_fin }}</p>
+            {% endif %}
 
             <h5 class="mt-3">Archivos de la Tarea</h5>
             <ul class="list-group">

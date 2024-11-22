@@ -4,3 +4,4 @@ crispy-bootstrap5
 djangorestframework
 transbank-sdk
 xhtml2pdf
+django-widget-tweaks

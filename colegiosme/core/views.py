@@ -7,7 +7,7 @@ from .forms import *
 import json
 from django.http import QueryDict
 from django.contrib import messages
-from django.db.models import Max, Sum, Q
+from django.db.models import Max, Sum, Q,Exists, OuterRef
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view
@@ -1432,7 +1432,7 @@ def responder_mensaje(request, id_mensaje):
             mensaje.save()
           
             # Obtener los destinatarios seleccionados
-            print("id_remitente",mensaje_original.mensaje.remitente.id)
+            
             destinatario = Usuario.objects.get(id=mensaje_original.mensaje.remitente.id)
             respuesta= EstadoMensaje.objects.create(mensaje=mensaje, destinatario=destinatario)
             HistoriaMensaje.objects.create(estado_mensaje_padre=mensaje_original, estado_mensaje_respuesta=respuesta)
@@ -1508,4 +1508,74 @@ def obtener_reuniones(request):
     serializer = ReunionSerializer(reuniones, many=True)
 
     return Response(serializer.data)
+## -- CONTACTO -- ##
+def contacto(request):
+    destinatarios = Usuario.objects.filter(tipo_usuario=4)
+    if request.method == 'POST':
+        form = ContactoForm(request.POST)
+        if form.is_valid():
+            contacto=form.save()
+            emails=list(destinatarios.values_list('persona__email',flat=True))
+            enviar_correo(emails,contacto.nombre +' :'+contacto.email,contacto.mensaje)
+            enviar_correo([contacto.email],"Registro Exitoso" ,f"Hola {contacto.nombre}, informamos que su solicitud quedo asociada al id={contacto.id_contacto}, pronto nos estaremos comunicando con usted, recuerde revisar constantemente su mail, Saludos.")
+            messages.success(request, f"¡Gracias por contactarnos, { contacto.nombre } ")
+        return redirect('inicio')
+    else:
+        form = ContactoForm()
+    return render(request, 'contacto/contacto.html', {'form': form})
 
+def listar_contacto(request):
+    # Contactos con respuestas
+    contactos_con_respuesta = Contacto.objects.annotate(
+        tiene_respuesta=Exists(
+            RespuestaContacto.objects.filter(contacto_id=OuterRef('id_contacto'))
+        )
+    )
+    contactos_con_respuesta = contactos_con_respuesta.filter(tiene_respuesta=True)
+    
+    # Contactos sin respuestas
+    contactos_sin_respuesta = Contacto.objects.annotate(
+        tiene_respuesta=Exists(
+            RespuestaContacto.objects.filter(contacto_id=OuterRef('id_contacto'))
+        )
+    )
+    contactos_sin_respuesta = contactos_sin_respuesta.filter(tiene_respuesta=False)
+
+    return render(request, 'contacto/listar_contacto.html', {
+        'contactos_con_respuesta': contactos_con_respuesta,
+        'contactos_sin_respuesta': contactos_sin_respuesta,
+    })
+
+def detalle_contacto(request, id_contacto):
+    contacto=Contacto.objects.get(id_contacto=id_contacto)
+    usuario = Usuario.objects.get(id=request.user.id)
+    respuesta=RespuestaContacto.objects.filter(contacto=contacto)
+    return render(request, 'contacto/detalle_contacto.html', {'contacto': contacto, 'usuario':usuario, 'respuesta':respuesta})
+
+def responder_contacto(request, id_contacto):
+    mensaje = Contacto.objects.get(id_contacto=id_contacto)
+    usuario=Usuario.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        form = RespuestaContactoForm(request.POST)
+        if form.is_valid():
+            print("Formulario válido. Datos:", form.cleaned_data)
+            respuesta_contacto = form.save(commit=False)
+            respuesta_contacto.remitente=usuario
+            respuesta_contacto.contacto=mensaje
+            respuesta_contacto.save()
+            
+          
+            print("grabo el formulario")
+
+            destinatario = mensaje.email
+            enviar_correo([destinatario],'RE: '+mensaje.nombre,mensaje.mensaje+'\nRespuesta de '+str(usuario)+'\n'+respuesta_contacto.mensaje_respuesta)
+            print("envía mail")   
+            
+            return redirect('listar_contacto')
+        else:
+             print("Formulario inválido. Errores:", form.errors)
+        
+    else:
+        form = RespuestaContactoForm()
+
+    return render(request, 'contacto/detalle_contacto.html',{'contacto':mensaje,'usuario':usuario})

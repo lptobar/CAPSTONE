@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_filters %}
+{% block content %}
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Sección del formulario -->
+            <div class="col-lg-6 mb-4">
+                <h1 class="mb-4 text-primary">Contáctanos</h1>
+                <p class="mb-3">Por favor, llena el siguiente formulario para enviarnos tus consultas.</p>
+                <form method="post" class="bg-white p-4 rounded shadow">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.email.label_tag }}
+                        {{ form.email|add_class:"form-control" }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.nombre.label_tag }}
+                        {{ form.nombre|add_class:"form-control" }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.mensaje.label_tag }}
+                        {{ form.mensaje|add_class:"form-control" }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Enviar correo</button>
+                </form>
+            </div>
+
+            <!-- Sección del mapa -->
+            <div class="col-lg-6">
+                <h2 class="mb-4 text-primary">Cómo llegar</h2>
+                <div class="ratio ratio-16x9">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d832.2355008454326!2d-70.62764477136949!3d-33.45081749832993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c57c835077fb%3A0x143c2ad6e94edbed!2sColegio%20Santa%20Margarita%20de%20Escocia!5e0!3m2!1ses!2scl!4v1732049529016!5m2!1ses!2scl"
+                        style="border:0;" 
+                        allowfullscreen=""
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+{% endblock %}

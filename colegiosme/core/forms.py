@@ -124,3 +124,19 @@ class ReunionForm(forms.ModelForm):
         model = Reunion
         fields = ['titulo', 'cuerpo', 'fecha', 'destinatario']
 
+class ContactoForm(forms.ModelForm):
+    class Meta:
+        model = Contacto  # Especifica el modelo relacionado
+        fields = ['email', 'nombre', 'mensaje']  # Los campos que quieres usar
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tu nombre'}),
+            'mensaje': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Tu mensaje'}),
+        }
+class RespuestaContactoForm(forms.ModelForm):
+    class Meta:
+        model=RespuestaContacto
+        fields=['mensaje_respuesta']
+        widgets={
+            'mensaje_respuesta':forms.Textarea(attrs={'class':'form-control','placeholder':'Ingresa tu Respuesta'})
+        }

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow">
+        <!-- Encabezado del mensaje -->
+        <div class="card-header bg-primary text-black">
+            <h2 class="h5 mb-0">{{ contacto.nombre }}</h2>
+        </div>
+
+        <!-- Contenido del mensaje -->
+        <div class="card-body">
+            <p><strong>De:</strong> {{ contacto.email }}</p>
+            <div class="mb-3">
+                <p>{{ contacto.mensaje|linebreaks }}</p>
+            </div>
+        </div>
+
+         <!-- Historial del mensaje (respuestas)-->
+        {% if respuesta %}
+            <div class="card-body border-top">
+                <h5>Historial de respuesta:</h5>
+                <ul class="list-unstyled">
+                    {% for mensaje in respuesta %} 
+                    <li class="mb-3">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <p class="mb-1"><strong>De:</strong> {{ mensaje.remitente }} ( {{ mensaje.remitente.persona.email }} ) </p>
+                            <p class="mb-1"><strong>Para:</strong> {{ mensaje.contacto.nombre }} ( {{ mensaje.contacto.email }}) </p>
+                            <p class="text-muted mb-2"><small>Enviado el: {{ mensaje.fecha_respuesta|date:"d M Y, H:i" }}</small></p>
+                            <p>{{ mensaje.mensaje_respuesta|linebreaks }}</p>
+                        </div>
+                    </li>
+                    
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+         
+
+      
+        
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <h5>Responder al Mensaje:</h5>
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                 
+            
+        <div class="card-body border-top">
+            <form method="post" action="{% url 'responder_contacto' contacto.id_contacto %}">
+                {% csrf_token %}
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Contenido del Mensaje</h5>
+                            <div class="mb-3">
+                                <label for="remitente" class="form-label">De:</label>
+                                <input type="text"  id="remitente" class="form-control" name="remitente" value="{{usuario.persona.email}}" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="destinatario" class="form-label">para:</label>
+                                <input type="text" id="destinatario" class="form-control" name="destinatario" value="{{contacto.email}}"readonly>
+                            </div>
+            
+                            <div class="mb-3">
+                                <label for="mensaje_respuesta" class="form-label">Mensaje de Respuesta:</label>
+                                <textarea id="mensaje_respuesta" name="mensaje_respuesta" rows="5" class="form-control" required></textarea>
+                            </div>                           
+                            <button type="submit" class="btn btn-primary">Enviar Respuesta</button>
+                        </div>
+                    </div>
+                </div>    
+            </form>
+        </div>
+    </div>
+</div>
+</div>   
+        
+
+        <!-- Pie de página con botón de regreso -->
+        <div class="card-footer text-end">
+            <a href="{% url 'listar_contacto' %}" class="btn btn-secondary">Volver a la bandeja de contacto</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

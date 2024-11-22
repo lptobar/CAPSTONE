@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.Mensaje_no_leidos',
+                'core.context_processors.contador_contactos_sin_respuesta',
             ],
         },
     },

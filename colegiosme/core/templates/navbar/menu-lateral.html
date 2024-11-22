@@ -26,9 +26,12 @@
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'ver-reuniones' %}"><i class="bi bi-journal-bookmark-fill"></i> Reuniones</a>
         {% elif request.user.tipo_usuario.id_tipo_usuario == 4 %}
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i> Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
+
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar_contacto' %}"><i class="bi bi-calendar-check"></i></i>Bandeja de Contacto {% if contador_sin_respuesta > 0 %}<span class="badge bg-danger">{{ contador_sin_respuesta }}</span>{% endif %} </a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i>Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
+
         {% elif request.user.tipo_usuario.id_tipo_usuario == 3 %}
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i> Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'horario_profesor' %}"><i class="bi bi-calendar-check"></i></i>Horario</a>

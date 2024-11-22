@@ -408,3 +408,22 @@ class Reunion(models.Model):
     remitente = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_remitente', related_name='id_remitente')
     destinatario = models.ForeignKey('Persona', on_delete=models.PROTECT, db_column='id_destinatario')
     estado_reunion = models.ForeignKey('EstadoReunion', on_delete=models.PROTECT, db_column='id_estado_reunion', default='1')
+## -- Contacto -- ##
+class Contacto(models.Model):
+    id_contacto=models.AutoField(primary_key=True)
+    email = models.EmailField()
+    nombre = models.CharField(max_length=100)
+    mensaje = models.TextField()
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nombre
+
+class RespuestaContacto(models.Model):
+    id_respuesta_contacto=models.AutoField(primary_key=True)
+    remitente=models.ForeignKey('Usuario',on_delete=models.PROTECT,db_column='id_usuario')
+    contacto=models.ForeignKey('Contacto',on_delete=models.PROTECT,db_column='id_contacto')
+    mensaje_respuesta=models.TextField()
+    fecha_respuesta = models.DateTimeField(auto_now_add=True)
+
+    

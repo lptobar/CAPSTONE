@@ -114,8 +114,12 @@ urlpatterns = [
     path('ver-reuniones/', ver_reuniones, name='ver-reuniones'),
     path('info-reunion/<id>/', info_reunion, name='info-reunion'),
     path('agendar-reunion/<fecha>/', agendar_reunion, name='agendar-reunion'),
-    path('obtener-reuniones/', obtener_reuniones)
-
+    path('obtener-reuniones/', obtener_reuniones),
+    ## -- CONTACTO -- ##
+    path('contacto/', contacto, name='contacto'),
+    path('listar_contacto/', listar_contacto, name='listar_contacto'),
+    path('detalle_contacto/<int:id_contacto>', detalle_contacto, name='detalle_contacto'),
+    path('responder_contacto/<int:id_contacto>', responder_contacto, name='responder_contacto')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

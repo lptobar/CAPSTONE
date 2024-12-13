@@ -18,7 +18,7 @@
         {% if request.user.tipo_usuario.id_tipo_usuario == 5 %}
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i> Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar_horarios' %}"><i class="bi bi-calendar-check"></i></i> Mantención Horarios</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
+        <!-- <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a> -->
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'notas-curso' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-cursos' %}"><i class="bi bi-journals"></i> Administración de Cursos</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-asignaturas' %}"><i class="bi bi-journal-text"></i> Administración de Asignaturas</a>
@@ -28,13 +28,13 @@
         {% elif request.user.tipo_usuario.id_tipo_usuario == 4 %}
 
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar_contacto' %}"><i class="bi bi-calendar-check"></i></i>Bandeja de Contacto {% if contador_sin_respuesta > 0 %}<span class="badge bg-danger">{{ contador_sin_respuesta }}</span>{% endif %} </a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i>Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i> Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
+        <!-- <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'matricula-estudiante' %}"><i class="bi bi-mortarboard-fill"></i> Registrar matrícula</a> -->
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'listar-noticias' %}"><i class="bi bi-people-fill"></i> Administrador de Noticias</a>
 
         {% elif request.user.tipo_usuario.id_tipo_usuario == 3 %}
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'bandeja_entrada' %}"><i class="bi bi-envelope"></i></i> Mensajes {% if mensaje_no_leidos > 0 %}<span class="badge bg-danger">{{ mensaje_no_leidos }}</span>{% endif %}</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'horario_profesor' %}"><i class="bi bi-calendar-check"></i></i>Horario</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'horario_profesor' %}"><i class="bi bi-calendar-check"></i></i> Horario</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'lista_tareas' %}"><i class="bi bi-pencil"></i> Asignar Tareas</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'portal-notas-profesor' %}"><i class="bi bi-journal-bookmark-fill"></i> Calificaciones</a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'asistencia-cursos' %}"><i class="bi bi-file-earmark-text"></i> Asistencias</a>

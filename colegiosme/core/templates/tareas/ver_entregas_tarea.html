@@ -41,14 +41,13 @@
 
     {% if tarea.tipo_tarea.id_tipo_tarea == 1 %}
     <h3 class="mt-4">Alumnos que han entregado la tarea</h3>
-    <table class="table table-bordered mt-4">
-        <thead class="table">
+    <table class="table table-bordered mt-4" style="border: 1px solid black;">
+        <thead class="table" style="border: 1px solid black;">
             <tr>
                 <th>Estudiante</th>
                 <th>Fecha de Entrega</th>
                 <th>Comentario</th>
                 <th>Nombre Archivo</th>
-                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
@@ -58,11 +57,15 @@
                     <td>{{ entrega.fecha_entrega }}</td>
                     <td>{{ entrega.comentario }}</td>
                     {% if entrega.archivos.all %}
-                        {% for archivo in entrega.archivos.all %}
-                            <td><a href="{{ archivo.archivo.url }}">{{ archivo.archivo.name }}</a></td>
-                            <td><a href="{{ archivo.archivo.url }}" class="btn btn-sm btn-danger" download>Descargar</a></td>    
-                        {% endfor %}
-                {% endif %}
+                    <td>
+                        <ul>
+                            {% for archivo in entrega.archivos.all %}
+                            <li><a href="{{ archivo.archivo.url }}">{{ archivo.archivo.name }}</a>
+                            <a style="float: right;" href="{{ archivo.archivo.url }}" class="btn btn-sm btn-danger" download>Descargar</a></li><br>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    {% endif %}
                 </tr>
                 {% empty %}
                 <tr>
@@ -72,8 +75,8 @@
         </tbody>
     </table>
     <h3 class="mt-4">Alumnos que NO han entregado la tarea</h3>
-    <table class="table table-bordered mt-4">
-        <thead class="table">
+    <table class="table table-bordered mt-4" style="border: 1px solid black;">
+        <thead class="table" style="border: 1px solid black;">
             <tr>
                 <th>Estudiante</th>
                 <th>Mensaje</th>
